@@ -172,10 +172,6 @@
       <Project>{c79e6853-f7a0-426f-883c-169651123256}</Project>
       <Name>Grapevine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ExternalLibrary\InnoWatchApi\InnoWatchApi.csproj">
-      <Project>{8c6d3909-9cec-4afc-84f2-2bf6dc56abcc}</Project>
-      <Name>InnoWatchApi</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Iot.Common\Iot.Common.csproj">
       <Project>{16855575-8ac6-4dff-bc77-a7c4c1d4e8eb}</Project>
       <Name>Iot.Common</Name>

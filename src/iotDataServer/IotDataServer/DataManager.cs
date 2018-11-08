@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using InnoWatchApi;
-using InnoWatchApi.DataModel;
 using Iot.Common.ClassLogger;
 using Iot.Common.DataModel;
 using Iot.Common.Util;
