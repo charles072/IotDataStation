@@ -2,9 +2,6 @@
 <DataServer>
   <Settings>
     <Setting key="webServicePort" value="31000"/>
-    <Setting key="webRootFolder" value="WebRoot"/>
-    <Setting key="webTemplateFolder" value="Templates"/>
-    <Setting key="nodeGetterFolder" value="Getters"/>
     <Setting key="consoleLogLevel" value="Trace"/>
     <Setting key="fileLogLevel" value="Info"/>
   </Settings>

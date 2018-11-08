@@ -18,9 +18,9 @@ namespace IotDataServer
 
         public const string SettingFileName = "DataServerSettings.xml";
         public int WebServicePort { get; set; } = 20000;
-        public string WebRootFolder { get; set; } = "WebRoot";
-        public string WebTemplateFolder { get; set; } = "Templates";
-        public string NodeGetterFolder { get; set; } = "Getters";
+        public string WebRootFolder => "WebRoot";
+        public string WebTemplateFolder => "Templates";
+        public string NodeGetterFolder => "Getters";
         public LogLevel ConsoleLogLevel { get; set; } = LogLevel.Trace;
         public LogLevel FileLogLevel { get; set; } = LogLevel.Info;
 
@@ -39,10 +39,19 @@ namespace IotDataServer
             return sb.ToString();
         }
 
-        public DataServerSetting(int webServicePort)
+        public DataServerSetting(int webServicePort, IEnumerable<GetterSetting> getterSettings = null)
         {
             WebServicePort = webServicePort;
+
+            if (getterSettings != null)
+            {
+                foreach (GetterSetting getterSetting in getterSettings)
+                {
+                    _getterSettingDictionary[getterSetting.Name] = getterSetting;
+                }
+            }
         }
+
         public DataServerSetting(string settingFileName = null)
         {
             try
@@ -93,15 +102,6 @@ namespace IotDataServer
                         {
                             case "webServicePort":
                                 WebServicePort = StringUtils.GetValue(value, WebServicePort);
-                                break;
-                            case "webRootFolder":
-                                WebRootFolder = StringUtils.GetValue(value, WebRootFolder);
-                                break;
-                            case "webTemplateFolder":
-                                WebTemplateFolder = StringUtils.GetValue(value, WebTemplateFolder);
-                                break;
-                            case "nodeGetterFolder":
-                                NodeGetterFolder = StringUtils.GetValue(value, NodeGetterFolder);
                                 break;
                             case "consoleLogLevel":
                                 ConsoleLogLevel = StringUtils.GetValue(value, ConsoleLogLevel);

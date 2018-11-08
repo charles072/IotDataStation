@@ -13,7 +13,7 @@ namespace IotDataServer
 
         private readonly SimpleSettings _settings = new SimpleSettings();
 
-        public GetterSetting(string name, string configFile, bool isTestMode, SimpleSettings settings = null)
+        public GetterSetting(string name, string configFile="", bool isTestMode=false, SimpleSettings settings = null)
         {
             Name = name;
             ConfigFile = configFile;
