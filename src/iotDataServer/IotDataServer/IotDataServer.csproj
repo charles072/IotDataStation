@@ -149,7 +149,7 @@
     <Compile Include="DataModel\PageLinkInfo.cs" />
     <Compile Include="DataServer.cs" />
     <Compile Include="DataServerSetting.cs" />
-    <Compile Include="Gatter\TestGetter.cs" />
+    <Compile Include="GetterSetting.cs" />
     <Compile Include="HttpServer\TemplateManager.cs" />
     <Compile Include="HttpServer\WebResponse.cs" />
     <Compile Include="HttpServer\WebServer.cs" />
@@ -182,8 +182,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DataServerSettings.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="DataServerSettings.sample.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

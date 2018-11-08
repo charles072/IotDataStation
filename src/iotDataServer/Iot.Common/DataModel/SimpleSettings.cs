@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -8,7 +9,7 @@ using Iot.Common.Util;
 
 namespace Iot.Common.DataModel
 {
-    public class SimpleSettings
+    public class SimpleSettings : IEnumerable<KeyValuePair<string, string>>
     {
         private static ClassLogger.ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
 
@@ -127,6 +128,16 @@ namespace Iot.Common.DataModel
             get => GetStringValue(name);
 
             set => _settingDictionary[name] = value;
+        }
+
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return _settingDictionary.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

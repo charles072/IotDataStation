@@ -19,27 +19,24 @@ namespace IotDataServer
 
         private FileSystemWatcher _configFolderWatcher;
         private readonly IDataManager _dataManager;
-        private readonly string _configFolderPath;
+        private readonly string _nodeGetterFolder;
 
-        public DataGetterManager(GetterSetting[] settings, Assembly getterAssembly, IDataManager dataManager,
-            string configFolderPath = null)
+        public DataGetterManager(GetterSetting[] settings, string nodeGetterFolder, IDataManager dataManager)
         {
             _dataManager = dataManager;
-            _configFolderPath = configFolderPath;
-            if (string.IsNullOrWhiteSpace(_configFolderPath))
-            {
-                var baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-                _configFolderPath = Path.Combine(baseFolder, "GetterSettings");
-            }
+
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            _nodeGetterFolder = Path.Combine(baseDirectory, nodeGetterFolder);
+
             _getterSettings = settings ?? new GetterSetting[0];
-            LoadGetters(getterAssembly);
+            LoadGetters();
             InitializeGetters();
-            if (!Directory.Exists(_configFolderPath))
+            if (!Directory.Exists(_nodeGetterFolder))
             {
-                Directory.CreateDirectory(_configFolderPath);
+                Directory.CreateDirectory(_nodeGetterFolder);
             }
             _configFolderWatcher = new FileSystemWatcher();
-            _configFolderWatcher.Path = _configFolderPath;
+            _configFolderWatcher.Path = _nodeGetterFolder;
             _configFolderWatcher.Changed += ConfigFolderWatcherOnChanged;
             _configFolderWatcher.EnableRaisingEvents = true;
         }
@@ -53,7 +50,7 @@ namespace IotDataServer
                 {
                     if (_dataGetterNameDictionary.TryGetValue(setting.Name, out IDataGetter dataGetter))
                     {
-                        string configFilepath = Path.Combine(_configFolderPath, setting.ConfigFile);
+                        string configFilepath = Path.Combine(_nodeGetterFolder, setting.ConfigFile);
                         dataGetter?.Initialize(configFilepath, setting.IsTestMode, setting.Settings, _dataManager);
                     }
                 }
@@ -93,68 +90,64 @@ namespace IotDataServer
             }
         }
 
-        private void LoadGetters(Assembly assembly)
+        private void LoadGetters()
         {
-            //var assembly = Assembly.GetEntryAssembly();
-            if (assembly == null)
-            {
-                return;
-            }
             try
             {
-                Dictionary<string, IDataGetter> dataGetterDictionary = new Dictionary<string, IDataGetter>();
-                foreach (var getterSetting in _getterSettings)
+                if (!Directory.Exists(_nodeGetterFolder))
                 {
-                    _dataGetterNameDictionary[getterSetting.Name] = null;
+                    Directory.CreateDirectory(_nodeGetterFolder);
                 }
 
-                foreach (var type in assembly.GetTypes())
+                Dictionary<string, Type> getterTypeDictionary = new Dictionary<string, Type>();
+                foreach (var file in new DirectoryInfo(_nodeGetterFolder).GetFiles())
                 {
-                    if (IsDataGetter(type))
+                    string fileExtension = file.Extension.ToLower();
+                    if (String.CompareOrdinal(fileExtension, ".dll") == 0)
                     {
-                        GetterSetting getterSetting = Find(type);
-                        if (getterSetting != null)
+                        try
                         {
-                            if (Activator.CreateInstance(type) is IDataGetter dataGetter)
+                            string dllFilename = file.FullName;
+                            Assembly assembly = Assembly.LoadFile(dllFilename);
+                            foreach (var type in assembly.GetTypes())
                             {
-                                _dataGetterNameDictionary[type.Name] = dataGetter;
+                                if (IsDataGetter(type))
+                                {
+                                    getterTypeDictionary[type.Name] = type;
+                                }
                             }
-                            else
-                            {
-                                Logger.Error($"Cannot create instance of '{type.FullName}'.");
-                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e, $"cannot load assembly for '{file.Name}'.");
                         }
                     }
                 }
 
-                foreach (KeyValuePair<string, IDataGetter> keyValuePair in _dataGetterNameDictionary)
+                foreach (var getterSetting in _getterSettings)
                 {
-                    if (keyValuePair.Value == null)
+                    if (getterTypeDictionary.TryGetValue(getterSetting.Name, out Type getterType))
                     {
-                        Logger.Error($"Cannot find DataGetter name of '{keyValuePair.Key}'.");
+                        if (Activator.CreateInstance(getterType) is IDataGetter dataGetter)
+                        {
+                            _dataGetterNameDictionary[getterType.Name] = dataGetter;
+                        }
+                        else
+                        {
+                            Logger.Error($"Cannot create instance of '{getterType.FullName}'.");
+                        }
+                    }
+                    else
+                    {
+                        Logger.Error($"Cannot find DataGetter '{getterSetting.Name}'.");
                     }
                 }
-
             }
             catch (Exception e)
             {
-                Logger.Error(e, $"Cannot LoadGetters.");
+                Logger.Error(e, $"Cannot LoadFactories.");
                 throw;
             }
-        }
-
-        private GetterSetting Find(Type type)
-        {
-            string name = type.Name;
-            foreach (var getterSetting in _getterSettings)
-            {
-                if (getterSetting.Name == name)
-                {
-                    return getterSetting;
-                }
-            }
-
-            return null;
         }
 
         private bool IsDataGetter(Type type)
@@ -180,6 +173,5 @@ namespace IotDataServer
                 }
             }
         }
-
     }
 }

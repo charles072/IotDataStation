@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IotDataServer.Common.DataModel;
+﻿using IotDataServer.Common.DataModel;
 using IotDataServer.Common.Getter;
 
-namespace IotDataServer.Gatter
+namespace SampleNodeGetter
 {
-    class TestGetter : PollingDataGetterBase
+    public class TestGetter : PollingDataGetterBase
     {
         protected override void DoWorkTick(bool isFirstTick, bool isTestMode)
         {

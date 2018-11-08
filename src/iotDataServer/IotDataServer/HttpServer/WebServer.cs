@@ -12,7 +12,7 @@ namespace IotDataServer.HttpServer
         public int Port { get; }
         public bool IsListening => _restServer.IsListening;
 
-        public WebServer(int port = 8900)
+        public WebServer(int port = 8900, string webRoot = "WebRoot")
         {
             Port = port;
             _restServer = new RestServer
@@ -20,7 +20,7 @@ namespace IotDataServer.HttpServer
                 Host = "*",
                 Port = port.ToString()
             };
-            _restServer.PublicFolders.Add(new PublicFolder("WebRoot", ""));
+            _restServer.PublicFolders.Add(new PublicFolder(webRoot, ""));
             _restServer.PublicFolders.Add(new PublicFolder("logs", "logs")); ;
         }
 

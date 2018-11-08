@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using Iot.Common.ClassLogger;
@@ -16,42 +17,60 @@ namespace IotDataServer
         private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
 
         public const string SettingFileName = "DataServerSettings.xml";
-        public bool IsTestMode { get; set; } = true;
-        public int ServicePort { get; set; } = 20000;
+        public int WebServicePort { get; set; } = 20000;
+        public string WebRootFolder { get; set; } = "WebRoot";
+        public string WebTemplateFolder { get; set; } = "Templates";
+        public string NodeGetterFolder { get; set; } = "Getters";
         public LogLevel ConsoleLogLevel { get; set; } = LogLevel.Trace;
         public LogLevel FileLogLevel { get; set; } = LogLevel.Info;
-        private readonly Dictionary<string, string> _settingDictionary = new Dictionary<string, string>();
-        private readonly List<GetterSetting> _getterSettings = new List<GetterSetting>();
 
-        public GetterSetting[] GetterSettings => _getterSettings.ToArray();
+        private readonly Dictionary<string, GetterSetting> _getterSettingDictionary = new Dictionary<string, GetterSetting>();
+
+        public GetterSetting[] GetterSettings => _getterSettingDictionary.Values.ToArray();
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("\n\n");
-            sb.Append($"IsTestMode : {IsTestMode} \n");
-            sb.Append($"ServicePort : {ServicePort} \n");
+            sb.Append("\n");
+            sb.Append($"webServicePort : {WebServicePort} \n");
+            sb.Append($"webRootFolder : {WebRootFolder} \n");
+            sb.Append($"webTemplateFolder : {WebTemplateFolder} \n");
+            sb.Append($"nodeGetterFolder : {NodeGetterFolder} \n");
             return sb.ToString();
         }
-        public DataServerSetting()
+
+        public DataServerSetting(int webServicePort)
+        {
+            WebServicePort = webServicePort;
+        }
+        public DataServerSetting(string settingFileName = null)
         {
             try
             {
                 string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                string settingsPath = Path.Combine(baseDirectory, SettingFileName);
-                if (string.IsNullOrWhiteSpace(settingsPath))
-                {
-                    return;
-                }
-                XmlDocument settingXml = new XmlDocument();
 
-                settingXml.Load(settingsPath);
-                LoadSettings(settingXml.DocumentElement);
-                LoadGetters(settingXml.DocumentElement);
+                if (string.IsNullOrWhiteSpace(settingFileName))
+                {
+                    settingFileName = Path.Combine(baseDirectory, SettingFileName);
+                }
+                else if (!File.Exists(settingFileName))
+                {
+                    settingFileName = Path.Combine(baseDirectory, SettingFileName);
+                }
+
+                if (File.Exists(settingFileName))
+                {
+                    XmlDocument settingXml = new XmlDocument();
+
+                    settingXml.Load(settingFileName);
+                    LoadSettings(settingXml.DocumentElement);
+                    LoadGetters(settingXml.DocumentElement);
+                }
+
             }
             catch (Exception e)
             {
-                Logger.Error(e, "Cannot load setting file[{filename}].");
+                Logger.Error(e, "Cannot load setting file[{settingFileName}].");
             }
         }
 
@@ -72,14 +91,25 @@ namespace IotDataServer
                     {
                         switch (key)
                         {
-                            case "isTestMode":
-                                IsTestMode = StringUtils.GetValue(value, IsTestMode);
+                            case "webServicePort":
+                                WebServicePort = StringUtils.GetValue(value, WebServicePort);
                                 break;
-                            case "servicePort":
-                                ServicePort = StringUtils.GetValue(value, ServicePort);
+                            case "webRootFolder":
+                                WebRootFolder = StringUtils.GetValue(value, WebRootFolder);
+                                break;
+                            case "webTemplateFolder":
+                                WebTemplateFolder = StringUtils.GetValue(value, WebTemplateFolder);
+                                break;
+                            case "nodeGetterFolder":
+                                NodeGetterFolder = StringUtils.GetValue(value, NodeGetterFolder);
+                                break;
+                            case "consoleLogLevel":
+                                ConsoleLogLevel = StringUtils.GetValue(value, ConsoleLogLevel);
+                                break;
+                            case "fileLogLevel":
+                                FileLogLevel = StringUtils.GetValue(value, FileLogLevel);
                                 break;
                             default:
-                                SetStringValue(key, value);
                                 break;
                         }
                     }
@@ -103,6 +133,10 @@ namespace IotDataServer
                             config = $"{name}.xml";
                         }
                         bool isTestMode = XmlUtils.GetXmlAttributeTypeValue(getterNode, "isTestMode", false);
+                        string dllFilename = XmlUtils.GetXmlAttributeTypeValue(getterNode, "dll", "");
+
+                        SimpleSettings settings = new SimpleSettings();
+
                         Dictionary<string, string> settingDictionary = new Dictionary<string, string>();
                         if (string.IsNullOrWhiteSpace(name))
                         {
@@ -119,79 +153,19 @@ namespace IotDataServer
                                 case "isTestMode":
                                     break;
                                 default:
-                                    settingDictionary[attribute.Name] = attribute.Value;
+                                    settings[attribute.Name] = attribute.Value;
                                     break;
                             }
                         }
-                        _getterSettings.Add(new GetterSetting(name, config, isTestMode, settingDictionary));
+                        _getterSettingDictionary[name] = new GetterSetting(name, config, isTestMode, settings);
                     }
                 }
             }
         }
 
-        public T GetValue<T>(string key, T defaultValue = default(T))
+        public void AddGetter(string name, string configFile, bool isTestMode, string dllFileName = "", SimpleSettings settings = null)
         {
-            string foundData = GetStringValue(key);
-
-            try
-            {
-                if (string.IsNullOrWhiteSpace(foundData))
-                {
-                    return defaultValue;
-                }
-                var converter = TypeDescriptor.GetConverter(typeof(T));
-
-                return (T)converter.ConvertFromString(foundData);
-            }
-            catch
-            {
-                return defaultValue;
-            }
-        }
-
-        public string GetStringValue(string key)
-        {
-            return _settingDictionary.ContainsKey(key) ? _settingDictionary[key] : "";
-        }
-
-        public bool Exist(string key)
-        {
-            return _settingDictionary.ContainsKey(key);
-        }
-
-        public void SetStringValue(string key, string value)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                return;
-            }
-            _settingDictionary[key] = value;
-        }
-    }
-
-    public class GetterSetting
-    {
-        public string Name { get; set; }
-        public string ConfigFile { get; set; }
-        public bool IsTestMode { get; set; }
-
-        public SimpleSettings Settings => _settings;
-
-        private readonly SimpleSettings _settings = new SimpleSettings();
-
-        public GetterSetting(string name, string configFile, bool isTestMode, Dictionary<string, string> settingDictionary = null)
-        {
-            Name = name;
-            ConfigFile = configFile;
-            IsTestMode = isTestMode;
-
-            if (settingDictionary != null)
-            {
-                foreach (KeyValuePair<string, string> keyValuePair in settingDictionary)
-                {
-                    _settings[keyValuePair.Key] = keyValuePair.Value;
-                }
-            }
+            _getterSettingDictionary[name] = new GetterSetting(name, configFile, isTestMode, settings);
         }
     }
 }

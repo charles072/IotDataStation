@@ -100,7 +100,7 @@ namespace IotDataServer.WebService
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
                 string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
                 int depth = StringUtils.GetIntValue(WebServiceUtils.GetQueryStringValue(webParameter, "depth", "1"), 1);
-                bool includeNodes = StringUtils.GetValue(WebServiceUtils.GetQueryStringValue(webParameter, "includeNodes", "true"), true);
+                bool includeNodes = StringUtils.GetValue(WebServiceUtils.GetQueryStringValue(webParameter, "includeNodes", "false"), true);
 
                 string path = "";
                 var match = Regex.Match(context.Request.PathInfo, @"/folder(?<path>(/[a-zA-Z0-9_]+)+)$");

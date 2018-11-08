@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DataServer>
+  <Settings>
+    <Setting key="webServicePort" value="31000"/>
+    <Setting key="webRootFolder" value="WebRoot"/>
+    <Setting key="webTemplateFolder" value="Templates"/>
+    <Setting key="nodeGetterFolder" value="Getters"/>
+    <Setting key="consoleLogLevel" value="Trace"/>
+    <Setting key="fileLogLevel" value="Info"/>
+  </Settings>
+  <Getters>
+    <Getter name="TestGetter" config="" isTestMode="true" />
+  </Getters>
+</DataServer>

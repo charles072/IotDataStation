@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using Iot.Common.ClassLogger;
 using IotDataServer.HttpServer;
@@ -16,21 +17,35 @@ namespace IotDataServer
         public DataServer(DataServerSetting setting)
         {
             _setting = setting;
+
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            CreateDirectory(baseDirectory, _setting.WebRootFolder);
+            CreateDirectory(baseDirectory, _setting.WebTemplateFolder);
+            CreateDirectory(baseDirectory, _setting.NodeGetterFolder);
+
             Init();
+        }
+        private string CreateDirectory(string baseDirectory, string directoryName)
+        {
+            string directory = Path.Combine(baseDirectory, directoryName);
+            Directory.CreateDirectory(directory);
+
+            return directory;
         }
 
         public void Init()
         {
             _dataManager = DataManager.Instance;
             _dataManager.Initialize(_setting);
-            _webServer = new WebServer(_setting.ServicePort);
+            _webServer = new WebServer(_setting.WebServicePort, _setting.WebRootFolder);
         }
+
 
 
         public bool Start()
         {
             bool res = false;
-            _dataGetter = new DataGetterManager(_setting.GetterSettings, Assembly.GetAssembly(this.GetType()), _dataManager);
+            _dataGetter = new DataGetterManager(_setting.GetterSettings, _setting.NodeGetterFolder, _dataManager);
             try
             {
                 _dataGetter.Start();

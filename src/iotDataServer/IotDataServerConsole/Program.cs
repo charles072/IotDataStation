@@ -13,8 +13,10 @@ namespace IotDataServerConsole
         private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-
-            DataServerSetting setting = new DataServerSetting();
+            // Create setting in code
+            //DataServerSetting setting = new DataServerSetting(3000);
+            //Load setting form file.
+            DataServerSetting setting = new DataServerSetting("DataServerSettings.sample.xml");
             DataServer server = new DataServer(setting);
 
             try
