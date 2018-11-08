@@ -1,0 +1,48 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using Iot.Common.ClassLogger;
+@using Iot.Common.DataModel;
+@using IotDataServer.Common.DataModel;
+@using RazorEngine.Templating
+@{
+    ViewBag.Title = "TestLinks";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - IOT Data Server</title>
+</head>
+<body>
+    <div class="ui main container">
+        <h2 class="ui dividing header">@ViewBag.Title</h2>
+        <table class="ui table" id="tableLogConfig">
+            <thead>
+                <tr>
+                    <th class="one wide left aligned">제목</th>
+                    <th class="two wide center aligned">페이지</th>
+                    <th class="six wide center aligned">메모</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var linkInfo in Model)
+                    {
+                        <tr>
+                            <td class="left aligned">@linkInfo.Title</td>
+                            <td class="left aligned">
+                                <a href="@linkInfo.Url" target="_blank">
+                                    @linkInfo.Url
+                                </a>
+                            </td>
+                            <td class="left aligned">@linkInfo.Memo</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</body>

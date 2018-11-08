@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DataServer>
+  <Settings>
+    <Setting key="isTestMode" value="true"/>
+    <Setting key="servicePort" value="31000"/>
+    <Setting key="logLevelConsole" value="Trace"/>
+    <Setting key="logLevelFile" value="Info"/>
+    <Setting key="cmBaseUrl" value="http://127.0.0.1:30000/event"/>
+    <Setting key="aiEventServiceBaseUrl" value="http://172.30.200.190:27000/rest/event"/>
+  </Settings>
+  <Getters>
+    <Getter name="TestGetter" config="" isTestMode="true" />
+  </Getters>
+</DataServer>
