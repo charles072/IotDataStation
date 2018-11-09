@@ -15,7 +15,7 @@ using NLog;
 
 namespace IotDataServer.WebService
 {
-    [RestResource(BasePath = "/iot")]
+    [RestResource(BasePath = "/data")]
     public class WebService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

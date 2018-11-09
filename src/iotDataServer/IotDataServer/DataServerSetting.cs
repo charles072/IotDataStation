@@ -17,8 +17,8 @@ namespace IotDataServer
         public const string SettingFileName = "DataServerSettings.xml";
         public int WebServicePort { get; set; } = 20000;
         public string WebRootFolder => "WebRoot";
-        public string WebTemplateFolder => "Templates";
-        public string NodeGetterFolder => "Getters";
+        public string WebTemplateFolder => "WebTemplates";
+        public string NodeGetterFolder => "DataGetters";
         public LogLevel ConsoleLogLevel { get; set; } = LogLevel.Trace;
         public LogLevel FileLogLevel { get; set; } = LogLevel.Info;
 

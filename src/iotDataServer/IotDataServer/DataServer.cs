@@ -22,6 +22,8 @@ namespace IotDataServer
             CreateDirectory(baseDirectory, _setting.WebTemplateFolder);
             CreateDirectory(baseDirectory, _setting.NodeGetterFolder);
 
+            TemplateManager.TemplateFolder = _setting.WebTemplateFolder;
+
             Init();
         }
         private string CreateDirectory(string baseDirectory, string directoryName)

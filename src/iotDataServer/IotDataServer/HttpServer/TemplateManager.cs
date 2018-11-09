@@ -10,9 +10,11 @@ namespace IotDataServer.HttpServer
     public static class TemplateManager
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        static IRazorEngineService Service { get; set; }
-        static TemplateServiceConfiguration Configuration { get; set; }
-        static readonly object _lockObject = new object();
+        private static readonly object _lockObject = new object();
+
+        public static IRazorEngineService Service { get; set; }
+        public static TemplateServiceConfiguration Configuration { get; set; }
+        public static string TemplateFolder { get; set; } = "WebTemplates";
 
         static TemplateManager()
         {
@@ -65,7 +67,7 @@ namespace IotDataServer.HttpServer
                 {
                     if (!Service.IsTemplateCached(templateKey, anonymousType.GetType()))
                     {
-                        string file = $"Templates/{templateKey}.cshtml";
+                        string file = $"{TemplateFolder}/{templateKey}.cshtml";
                         string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
                         Engine.Razor.Compile(new LoadedTemplateSource(System.IO.File.ReadAllText(fullPath), fullPath), templateKey, anonymousType.GetType());
                     }
@@ -87,7 +89,7 @@ namespace IotDataServer.HttpServer
                 {
                     if (!Service.IsTemplateCached(templateKey, null))
                     {
-                        string file = $"Templates/{templateKey}.cshtml";
+                        string file = $"{TemplateFolder}/{templateKey}.cshtml";
                         string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
                         Engine.Razor.Compile(new LoadedTemplateSource(System.IO.File.ReadAllText(fullPath), fullPath), templateKey, null);
                     }

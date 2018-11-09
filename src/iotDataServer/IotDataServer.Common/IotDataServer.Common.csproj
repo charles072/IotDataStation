@@ -75,12 +75,9 @@
     <Compile Include="Interface\IDataGetter.cs" />
     <Compile Include="DataGetter\PollingDataGetterBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\CoordinateUtils.cs" />
     <Compile Include="Util\DateTimeUtils.cs" />
     <Compile Include="Util\HttpUtils.cs" />
     <Compile Include="Util\JsonUtils.cs" />
-    <Compile Include="Util\LocationUtils.cs" />
-    <Compile Include="Util\NetworkBytesUtils.cs" />
     <Compile Include="Util\ReflectionUtils.cs" />
     <Compile Include="Util\StaticExtensions.cs" />
     <Compile Include="Util\StringUtils.cs" />
