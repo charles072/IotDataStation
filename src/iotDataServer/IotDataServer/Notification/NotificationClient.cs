@@ -3,18 +3,18 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Iot.Common.ClassLogger;
+using NLog;
 using Newtonsoft.Json;
 using WebSocketSharp;
 using ErrorEventArgs = WebSocketSharp.ErrorEventArgs;
-using System.Net.WebSockets;
+using Logger = NLog.Logger;
 using WebSocket = WebSocketSharp.WebSocket;
 
 namespace IotDataServer.Notification
 {
     public class NotificationClient : IDisposable
     {
-        private static readonly ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Lazy<NotificationClient> Lazy = new Lazy<NotificationClient>(() => new NotificationClient());
         public static NotificationClient Instance => Lazy.Value;
 

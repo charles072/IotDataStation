@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Iot.Common.ClassLogger;
+using NLog;
 using RazorEngine;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
@@ -9,7 +9,7 @@ namespace IotDataServer.HttpServer
 {
     public static class TemplateManager
     {
-        private static readonly ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         static IRazorEngineService Service { get; set; }
         static TemplateServiceConfiguration Configuration { get; set; }
         static readonly object _lockObject = new object();

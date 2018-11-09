@@ -5,10 +5,9 @@ using System.Xml;
 using Grapevine.Interfaces.Server;
 using Grapevine.Server;
 using Grapevine.Shared;
-using Iot.Common.ClassLogger;
-using Iot.Common.DataModel;
-using Iot.Common.Util;
-using IotDataServer.Common.DataModel;
+using NLog;
+using IotDataServer.Common.Interface;
+using IotDataServer.Common.Util;
 using Newtonsoft.Json.Linq;
 using ContentType = Grapevine.Shared.ContentType;
 
@@ -16,7 +15,7 @@ namespace IotDataServer.HttpServer
 {
     public class WebResponse
     {
-        private static readonly ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static bool SendFolderResponseAsJson(IHttpContext context, IFolder folder)
         {
@@ -168,7 +167,7 @@ namespace IotDataServer.HttpServer
             }
             return res;
         }
-
+/*
         public static bool SendChartDataSetResponse(IHttpContext context, ChartDataSet chartDataSet)
         {
             bool res = false;
@@ -194,6 +193,6 @@ namespace IotDataServer.HttpServer
                 context.Response.SendResponse(HttpStatusCode.InternalServerError);
             }
             return res;
-        }
+        }*/
     }
 }

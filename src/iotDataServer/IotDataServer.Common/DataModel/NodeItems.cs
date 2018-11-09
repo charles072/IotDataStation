@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace IotDataServer.Common.DataModel
 {
-    public class NodeItems : IEnumerable<string, NodeItem>, IEnumerable
+    public class NodeItems : IEnumerable<KeyValuePair<string, NodeItem>>
     {
         readonly Dictionary<string, NodeItem> _itemDictionary = new Dictionary<string, NodeItem>();
 

@@ -1,5 +1,5 @@
-﻿using IotDataServer.Common.DataModel;
-using IotDataServer.Common.Getter;
+﻿using IotDataServer.Common.DataGetter;
+using IotDataServer.Common.DataModel;
 
 namespace SampleNodeGetter
 {

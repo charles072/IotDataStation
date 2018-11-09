@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using Iot.Common.ClassLogger;
-using Iot.Common.DataModel;
-using Iot.Common.Util;
 using IotDataServer.Common.DataModel;
+using IotDataServer.Common.Interface;
+using IotDataServer.Common.Util;
 using IotDataServer.DataModel;
+using NLog;
 
 namespace IotDataServer
 {
     public class DataManager : IDataManager
     {
-        private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region SingleTone
         private static readonly Lazy<DataManager> Lazy = new Lazy<DataManager>(() => new DataManager());

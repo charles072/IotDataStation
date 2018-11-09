@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Iot.Common.ClassLogger;
-using IotDataServer.Common.DataModel;
-using IotDataServer.Common.Getter;
+using NLog;
+using IotDataServer.Common.Interface;
 
 namespace IotDataServer
 {
     public class DataGetterManager
     {
-        private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Type DataGetterInterfaceType = typeof(IDataGetter);
 
         private GetterSetting[] _getterSettings = null;

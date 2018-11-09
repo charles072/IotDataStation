@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Iot.Common.DataModel;
+using IotDataServer.Common.Interface;
 
 namespace IotDataServer.Common.DataModel
 {

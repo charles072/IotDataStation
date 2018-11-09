@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using Iot.Common.ClassLogger;
-using Iot.Common.DataModel;
-using Iot.Common.Log;
-using Iot.Common.Util;
+using IotDataServer.Common.DataModel;
+using IotDataServer.Common.Util;
+using NLog;
 
 namespace IotDataServer
 {
     public class DataServerSetting
     {
-        private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public const string SettingFileName = "DataServerSettings.xml";
         public int WebServicePort { get; set; } = 20000;

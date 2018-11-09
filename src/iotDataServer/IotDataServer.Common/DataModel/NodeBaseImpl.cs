@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using Iot.Common.ClassLogger;
-using Iot.Common.DataModel;
-using Iot.Common.Log;
-using Iot.Common.Util;
+using IotDataServer.Common.Util;
 using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace IotDataServer.Common.DataModel
 {
     public abstract class NodeBaseImpl
     {
-        private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private string _className = "";
 
         public string ClassName
@@ -38,7 +34,7 @@ namespace IotDataServer.Common.DataModel
             Name = string.IsNullOrWhiteSpace(name) ? id : name;
             Status = status;
             GroupName = string.IsNullOrWhiteSpace(groupName) ? ClassName: groupName;
-            UpdatedTime = updatedTime ?? DateTime.Now;
+            UpdatedTime = updatedTime ?? CachedDateTime.Now;
 
             Pin = pin?.Clone();
 

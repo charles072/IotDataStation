@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Iot.Common.DataModel;
+using IotDataServer.Common.DataModel;
 
 namespace IotDataServer
 {

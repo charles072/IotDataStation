@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml;
 using Grapevine.Interfaces.Server;
 using Grapevine.Server;
 using Grapevine.Server.Attributes;
 using Grapevine.Shared;
-using Iot.Common.ClassLogger;
-using Iot.Common.DataModel;
-using Iot.Common.Util;
 using IotDataServer.DataModel;
 using IotDataServer.HttpServer;
-using IotDataServer.Common.DataModel;
+using IotDataServer.Common.Interface;
+using IotDataServer.Common.Util;
+using NLog;
 
 
 namespace IotDataServer.WebService
@@ -22,7 +18,7 @@ namespace IotDataServer.WebService
     [RestResource(BasePath = "/iot")]
     public class WebService
     {
-        private static readonly ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "/")]
         public IHttpContext Index(IHttpContext context)

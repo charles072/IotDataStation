@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Iot.Common.ClassLogger;
+using NLog;
 using IotDataServer;
 
 namespace IotDataServerConsole
 {
     class Program
     {
-        private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
             //Load setting form file.

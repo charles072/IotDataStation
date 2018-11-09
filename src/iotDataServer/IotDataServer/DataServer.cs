@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
-using Iot.Common.ClassLogger;
 using IotDataServer.HttpServer;
+using NLog;
 
 namespace IotDataServer
 {
     public class DataServer
     {
-        private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly DataServerSetting _setting;
         private WebServer _webServer;
         private DataGetterManager _dataGetter = null;

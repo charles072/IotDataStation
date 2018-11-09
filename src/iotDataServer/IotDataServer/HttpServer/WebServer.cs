@@ -1,12 +1,12 @@
 ﻿using System;
 using Grapevine.Server;
-using Iot.Common.ClassLogger;
+using NLog;
 
 namespace IotDataServer.HttpServer
 {
     public class WebServer
     {
-        private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly RestServer _restServer;
 
         public int Port { get; }

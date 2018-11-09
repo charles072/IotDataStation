@@ -1,5 +1,5 @@
 ﻿using System;
-using Iot.Common.Util;
+using IotDataServer.Common.Util;
 
 namespace IotDataServer.Notification
 {

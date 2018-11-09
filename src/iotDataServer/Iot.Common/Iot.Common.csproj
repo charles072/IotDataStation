@@ -48,17 +48,6 @@
   <ItemGroup>
     <Compile Include="ClassLogger\ClassLogger.cs" />
     <Compile Include="ClassLogger\ClassLogManager.cs" />
-    <Compile Include="DataModel\ChartDataSet.cs" />
-    <Compile Include="DataModel\ChartDefinition.cs" />
-    <Compile Include="DataModel\ChartFavoriteSetting.cs" />
-    <Compile Include="DataModel\ChartSeriesData.cs" />
-    <Compile Include="DataModel\PinAlignment.cs" />
-    <Compile Include="DataModel\PinNode.cs" />
-    <Compile Include="DataModel\PinObject.cs" />
-    <Compile Include="DataModel\PinPoint.cs" />
-    <Compile Include="DataModel\PinRect.cs" />
-    <Compile Include="DataModel\PinSize.cs" />
-    <Compile Include="DataModel\SimpleSettings.cs" />
     <Compile Include="IO\TextFieldReader.cs" />
     <Compile Include="IO\TextFieldWriter.cs" />
     <Compile Include="Log\ConsoleLogWriter.cs" />
@@ -70,17 +59,6 @@
     <Compile Include="Log\LoggerCore.cs" />
     <Compile Include="Log\LogLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\CoordinateUtils.cs" />
-    <Compile Include="Util\DateTimeUtils.cs" />
-    <Compile Include="Util\HttpUtils.cs" />
-    <Compile Include="Util\JsonUtils.cs" />
-    <Compile Include="Util\LocationUtils.cs" />
-    <Compile Include="Util\NetworkBytesUtils.cs" />
-    <Compile Include="Util\ReflectionUtils.cs" />
-    <Compile Include="Util\StaticExtensions.cs" />
-    <Compile Include="Util\StringUtils.cs" />
-    <Compile Include="Util\StringWriterWithEncoding.cs" />
-    <Compile Include="Util\XmlUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

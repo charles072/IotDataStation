@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Iot.Common.ClassLogger;
-using Iot.Common.Log;
-using Iot.Common.Util;
 using IotDataServer.Common.DataModel;
+using IotDataServer.Common.Util;
+using NLog;
 
 namespace IotDataServer.DataModel
 {
     public class NodeStatusSummary
     {
-        private static ClassLogger Logger = ClassLogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public string Path { get; }
         public int PathDepth { get; }

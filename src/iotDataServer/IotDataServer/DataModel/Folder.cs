@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using Iot.Common.Util;
 using IotDataServer.Common.DataModel;
+using IotDataServer.Common.Interface;
+using IotDataServer.Common.Util;
 using Newtonsoft.Json.Linq;
 
 namespace IotDataServer.DataModel
