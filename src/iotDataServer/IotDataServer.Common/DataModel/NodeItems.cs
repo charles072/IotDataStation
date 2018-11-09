@@ -1,11 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace IotDataServer.Common.DataModel
 {
     public class NodeItems : IEnumerable<KeyValuePair<string, NodeItem>>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         readonly Dictionary<string, NodeItem> _itemDictionary = new Dictionary<string, NodeItem>();
 
         public IEnumerator<KeyValuePair<string, NodeItem>> GetEnumerator()
@@ -53,5 +58,33 @@ namespace IotDataServer.Common.DataModel
         public string[] Names => _itemDictionary.Keys.ToArray();
         public NodeItem[] Values => _itemDictionary.Values.ToArray();
         public int Count => _itemDictionary.Count;
+
+        public static NodeItems CreateFrom(JArray nodeItemsJArray)
+        {
+            if (nodeItemsJArray == null)
+            {
+                return null;
+            }
+            NodeItems nodeItems = null;
+            try
+            {
+                nodeItems = new NodeItems();
+                foreach (var nodeItemJObject in nodeItemsJArray)
+                {
+                    NodeItem nodeItem = NodeItem.CreateFrom((JObject)nodeItemJObject);
+                    if (nodeItem != null)
+                    {
+                        nodeItems.SetItem(nodeItem);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                nodeItems = null;
+                Logger.Error(e, "CreateFrom(JArray nodeItemsJArray):");
+            }
+
+            return nodeItems;
+        }
     }
 }

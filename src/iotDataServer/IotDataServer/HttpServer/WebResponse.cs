@@ -43,6 +43,25 @@ namespace IotDataServer.HttpServer
             return res;
         }
 
+        public static bool SendNodeResponseAsJson(IHttpContext context, INode node)
+        {
+            bool res = false;
+            try
+            {
+                context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+                WebServiceUtils.AddNoCacheHeader(context);
+                WebServiceUtils.SetJsonHeader(context);
+                context.Response.SendResponse(HttpStatusCode.Ok, node.ToJObject().ToString(), Encoding.UTF8, ContentType.JSON);
+                res = true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "SendNodeResponseAsJson:");
+                context.Response.SendResponse(HttpStatusCode.InternalServerError);
+            }
+            return res;
+        }
+
         public static bool SendNodesResponseAsJson(IHttpContext context, INode[] nodes)
         {
             bool res = false;

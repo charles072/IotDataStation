@@ -13,7 +13,7 @@ namespace IotDataServer.Common.Interface
         NodeStatus Status { get; }
         string GroupName { get; }
         DateTime UpdatedTime { get; set; }
-        PinObject Pin { get; }
+        NodePoint Point { get; }
         NodeAttributes Attributes { get; }
         NodeItems Items { get; }
         string ToXmlString();

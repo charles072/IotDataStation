@@ -55,12 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataModel\PinAlignment.cs" />
-    <Compile Include="DataModel\PinNode.cs" />
-    <Compile Include="DataModel\PinObject.cs" />
-    <Compile Include="DataModel\PinPoint.cs" />
-    <Compile Include="DataModel\PinRect.cs" />
-    <Compile Include="DataModel\PinSize.cs" />
+    <Compile Include="DataModel\NodePoint.cs" />
     <Compile Include="DataModel\SimpleSettings.cs" />
     <Compile Include="Interface\IDataManager.cs" />
     <Compile Include="Interface\IFolder.cs" />

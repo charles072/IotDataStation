@@ -12,31 +12,37 @@ namespace IotDataServer.Common.DataModel
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private string _className = "";
+        private string _groupName = "";
 
         public string ClassName
         {
             get => string.IsNullOrWhiteSpace(_className) ? this.GetType().Name: _className;
             set => _className = value;
         }
+        public string GroupName
+        {
+            get => string.IsNullOrWhiteSpace(_groupName) ? ClassName : _groupName;
+            set => _groupName = value;
+        }
 
         public string Id { get; }
         public string Name { get; }
         public NodeStatus Status { get; }
-        public string GroupName { get; }
+
         public DateTime UpdatedTime { get; set; }
-        public PinObject Pin { get; }
+        public NodePoint Point { get; }
         public NodeAttributes Attributes { get; }
         public NodeItems Items { get; }
 
-        protected NodeBaseImpl(string id, string name = "", NodeStatus status = NodeStatus.None, string groupName = "", PinObject pin = null,NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null)
+        protected NodeBaseImpl(string id, string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodePoint point = null,NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null)
         {
             Id = id;
             Name = string.IsNullOrWhiteSpace(name) ? id : name;
             Status = status;
-            GroupName = string.IsNullOrWhiteSpace(groupName) ? ClassName: groupName;
+            GroupName = groupName;
             UpdatedTime = updatedTime ?? CachedDateTime.Now;
 
-            Pin = pin?.Clone();
+            Point = point?.Clone();
 
             Attributes = new NodeAttributes();
             if (attributes != null)
@@ -82,7 +88,7 @@ namespace IotDataServer.Common.DataModel
         {
             WriteHeader(xmlWriter);
 
-            Pin?.WriteXml(xmlWriter);
+            Point?.WriteXml(xmlWriter);
             WriteBodyXml(xmlWriter);
 
             WriteFooter(xmlWriter);
@@ -146,9 +152,9 @@ namespace IotDataServer.Common.DataModel
                 nodeObject[keyValuePair.Key] = keyValuePair.Value;
             }
 
-            if (Pin != null)
+            if (Point != null)
             {
-                nodeObject["pin"] = Pin.ToJObject();
+                nodeObject["point"] = Point.ToJObject();
             }
 
             if (Items.Count > 0)

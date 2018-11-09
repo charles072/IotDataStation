@@ -1,10 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using IotDataServer.Common.Util;
+using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace IotDataServer.Common.DataModel
 {
     public class NodeItem : IEnumerable<KeyValuePair<string, string>>, IEnumerable
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly Dictionary<string, string> _attributeDictionary = new Dictionary<string, string>();
 
         public string Name
@@ -63,5 +70,46 @@ namespace IotDataServer.Common.DataModel
         }
 
         public int Count => _attributeDictionary.Count;
+
+        public static NodeItem CreateFrom(JObject nodeItemJObject)
+        {
+            if (nodeItemJObject == null)
+            {
+                return null;
+            }
+
+            NodeItem nodeItem = null;
+            try
+            {
+                string name = JsonUtils.GetStringValue(nodeItemJObject, "name");
+                string value = JsonUtils.GetStringValue(nodeItemJObject, "value");
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    Logger.Error("Cannot create NodeItem, name is empty.");
+                    return null;
+                }
+
+                nodeItem = new NodeItem(name, value);
+                foreach (var property in nodeItemJObject.Properties())
+                {
+                    switch (property.Name)
+                    {
+                        case "name":
+                        case "value":
+                            break;
+                        default:
+                            nodeItem[property.Name] = property.Value<string>();
+                            break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "NodeItem CreateFrom(JObject nodeItemJObject):");
+                nodeItem = null;
+            }
+            return nodeItem;
+        }
     }
 }

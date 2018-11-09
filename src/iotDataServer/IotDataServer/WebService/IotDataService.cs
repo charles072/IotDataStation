@@ -15,7 +15,7 @@ using NLog;
 
 namespace IotDataServer.WebService
 {
-    [RestResource(BasePath = "/data")]
+    [RestResource(BasePath = "/iot/data")]
     public class WebService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -55,6 +55,57 @@ namespace IotDataServer.WebService
             return linkInfos;
         }
 
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "/node(?<path>(/[a-zA-Z0-9_]+)+)/(?<nodeId>[a-zA-Z0-9_]+)$")]
+        public IHttpContext GetNode(IHttpContext context)
+        {
+            try
+            {
+                var webParameter = WebServiceUtils.GetNameValueCollection(context);
+                string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
+
+                string path = "";
+                string nodeId = "";
+                var match = Regex.Match(context.Request.PathInfo, @"/node(?<path>(/[a-zA-Z0-9_]+)+)/(?<nodeId>[a-zA-Z0-9_]+)$");
+                if (match.Success)
+                {
+                    path = match.Groups["path"].Value;
+                    nodeId = match.Groups["nodeId"].Value;
+                }
+
+                if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(nodeId))
+                {
+                    context.Response.SendResponse(HttpStatusCode.BadRequest);
+                }
+                else
+                {
+                    DataManager dataManager = DataManager.Instance;
+                    INode node = dataManager.GetNode(path, nodeId);
+
+                    if (node != null)
+                    {
+                        if (responseFormat == "xml")
+                        {
+                            WebResponse.SendNodeResponseAsXml(context, node);
+                        }
+                        else
+                        {
+                            WebResponse.SendNodeResponseAsJson(context, node);
+                        }
+                    }
+                    else
+                    {
+                        context.Response.SendResponse(HttpStatusCode.BadRequest);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Cannot GetXmlData!");
+                context.Response.SendResponse(HttpStatusCode.InternalServerError);
+            }
+            return context;
+        }
+
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "/nodes(?<path>(/[a-zA-Z0-9_]+)+)$")]
         public IHttpContext GetNodes(IHttpContext context)
         {
@@ -88,6 +139,7 @@ namespace IotDataServer.WebService
             }
             return context;
         }
+
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "/folder(?<path>(/[a-zA-Z0-9_]+)+)$")]
         public IHttpContext GetFolder(IHttpContext context)
         {
