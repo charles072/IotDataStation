@@ -223,12 +223,12 @@ namespace Grapevine.Interfaces.Server
             Id = Guid.NewGuid().Truncate();
             Advanced = new AdvancedHttpRequest(request);
 
-            ContentEncoding = request.ContentEncoding;
+            /*ContentEncoding = request.ContentEncoding;
             if (request.ContentType == null)
             {
                 ContentEncoding = Encoding.UTF8;
-            }
-            
+            }*/
+            ContentEncoding = Encoding.UTF8;
             try
             {
                 int index = request?.RawUrl?.IndexOf("?") ?? -1;

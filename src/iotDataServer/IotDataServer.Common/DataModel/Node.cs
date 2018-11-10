@@ -58,22 +58,21 @@ namespace IotDataServer.Common.DataModel
                     switch (property.Name)
                     {
                         case "id":
-                            id = property.Value<string>();
                             break;
                         case "name":
-                            name = property.Value<string>();
+                            name = property.Value.Value<string>();
                             break;
                         case "class":
-                            className = property.Value<string>();
+                            className = property.Value.Value<string>();
                             break;
                         case "status":
-                            status = StringUtils.ToEnum(property.Value<string>(), NodeStatus.None);
+                            status = StringUtils.ToEnum(property.Value.Value<string>(), NodeStatus.None);
                             break;
                         case "group":
-                            groupName = property.Value<string>();
+                            groupName = property.Value.Value<string>();
                             break;
                         case "updatedTime":
-                            updatedTime = DateTime.ParseExact(property.Value<string>(), "yyyy.MM.dd HH:mm", CultureInfo.InvariantCulture);
+                            updatedTime = DateTime.ParseExact(property.Value.Value<string>(), "yyyy.MM.dd HH:mm:ss", CultureInfo.InvariantCulture);
                             break;
                         case "point":
                             point = NodePoint.CreateFrom((JObject)nodeObject["point"]);
@@ -86,7 +85,7 @@ namespace IotDataServer.Common.DataModel
                             {
                                 attributes = new NodeAttributes();
                             }
-                            attributes[property.Name] = property.Value<string>();
+                            attributes[property.Name] = property.Value.Value<string>();
                             break;
                     }
                 }

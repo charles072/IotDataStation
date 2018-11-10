@@ -6,10 +6,12 @@ using Grapevine.Interfaces.Server;
 using Grapevine.Server;
 using Grapevine.Server.Attributes;
 using Grapevine.Shared;
+using IotDataServer.Common.DataModel;
 using IotDataServer.DataModel;
 using IotDataServer.HttpServer;
 using IotDataServer.Common.Interface;
 using IotDataServer.Common.Util;
+using Newtonsoft.Json.Linq;
 using NLog;
 
 
@@ -55,7 +57,30 @@ namespace IotDataServer.WebService
             return linkInfos;
         }
 
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "/node(?<path>(/[a-zA-Z0-9_]+)+)/(?<nodeId>[a-zA-Z0-9_]+)$")]
+        [RestRoute(HttpMethod = HttpMethod.ALL, PathInfo = "/node(?<path>(/[a-zA-Z0-9_]+)+)/(?<nodeId>[a-zA-Z0-9_]+)$")]
+        public IHttpContext ServiceNode(IHttpContext context)
+        {
+            IHttpContext responseContext = null;
+            switch (context.Request.HttpMethod)
+            {
+                case HttpMethod.GET:
+                    responseContext = GetNode(context);
+                    break;
+
+                case HttpMethod.POST:
+                case HttpMethod.PUT:
+                    responseContext = SetNode(context);
+                    break;
+            }
+
+            if (responseContext == null)
+            {
+                context.Response.SendResponse(HttpStatusCode.BadRequest);
+                responseContext = context;
+            }
+            return responseContext;
+        }
+
         public IHttpContext GetNode(IHttpContext context)
         {
             try
@@ -105,6 +130,56 @@ namespace IotDataServer.WebService
             }
             return context;
         }
+        public IHttpContext SetNode(IHttpContext context)
+        {
+            try
+            {
+                var webParameter = WebServiceUtils.GetNameValueCollection(context);
+                string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
+
+                string path = "";
+                string nodeId = "";
+                var match = Regex.Match(context.Request.PathInfo, @"/node(?<path>(/[a-zA-Z0-9_]+)+)/(?<nodeId>[a-zA-Z0-9_]+)$");
+                if (match.Success)
+                {
+                    path = match.Groups["path"].Value;
+                    nodeId = match.Groups["nodeId"].Value;
+                }
+
+                string jsonString = context.Request.Payload;
+                
+                Node node = Node.CreateFrom(JObject.Parse(jsonString));
+                if (node == null)
+                {
+                    context.Response.SendResponse(HttpStatusCode.BadRequest);
+                }
+                else if (node.Id != nodeId)
+                {
+                    string message = $"Node ID is mismatched ('{nodeId}' != '{node.Id}').";
+                    Logger.Warn(message);
+                    context.Response.SendResponse(HttpStatusCode.BadRequest, message);
+                }
+                else
+                {
+                    DataManager dataManager = DataManager.Instance;
+                    if (dataManager.SetNode(path, node))
+                    {
+                        WebResponse.SendNodeResponseAsJson(context, node);
+                    }
+                    else
+                    {
+                        context.Response.SendResponse(HttpStatusCode.BadRequest);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Cannot SetNode!");
+                context.Response.SendResponse(HttpStatusCode.InternalServerError);
+            }
+            return context;
+        }
+
 
         [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "/nodes(?<path>(/[a-zA-Z0-9_]+)+)$")]
         public IHttpContext GetNodes(IHttpContext context)

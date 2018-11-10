@@ -99,7 +99,7 @@ namespace IotDataServer.Common.DataModel
                         case "value":
                             break;
                         default:
-                            nodeItem[property.Name] = property.Value<string>();
+                            nodeItem[property.Name] = property.Value.Value<string>();
                             break;
                     }
                 }
