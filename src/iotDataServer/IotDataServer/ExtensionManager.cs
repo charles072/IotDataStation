@@ -178,7 +178,7 @@ namespace IotDataServer
                 }
                 foreach (var extensionSetting in _dataGetterSettings)
                 {
-                    if (_dataListenerTypeDictionary.TryGetValue(extensionSetting.Name, out Type extensionType))
+                    if (_dataGetterTypeDictionary.TryGetValue(extensionSetting.Name, out Type extensionType))
                     {
                         try
                         {

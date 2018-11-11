@@ -32,6 +32,10 @@ namespace IotDataServer.Common.DataModel
 
         public static Node CreateFrom(INode iNode)
         {
+            if (iNode == null)
+            {
+                return null;
+            }
             return new Node(iNode.Id, iNode.Name, iNode.Status, iNode.GroupName, iNode.Point, iNode.Attributes, iNode.Items, iNode.UpdatedTime, iNode.ClassName);
         }
 

@@ -12,15 +12,14 @@ namespace IotDataServer
 {
     public class DataManager : IDataManager
     {
-        private readonly IDataListener[] _dataListeners;
+        private IDataListener[] _dataListeners = new IDataListener[0];
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Dictionary<string, Dictionary<string, INode>> _nodesDictionary = new Dictionary<string, Dictionary<string, INode>>();
         private readonly Dictionary<string, INodeStatusSummary> _nodeStatusSummaryDictionary = new Dictionary<string, INodeStatusSummary>();
 
-        public DataManager(IDataListener[] dataListeners)
+        public DataManager()
         {
-            _dataListeners = dataListeners;
         }
 
         public INodeStatusSummary[] NodeStatusSummaries => _nodeStatusSummaryDictionary.Values.ToArray();
@@ -222,13 +221,28 @@ namespace IotDataServer
             return "";
         }
 
+        public void SetDataListeners(IDataListener[] extensionManagerDataListeners)
+        {
+            _dataListeners = extensionManagerDataListeners;
+        }
+
         private void NotifyUpdatedNode(string path, INode newNode, INode oldNode)
         {
             foreach (IDataListener dataListener in _dataListeners)
             {
                 Task.Factory.StartNew(() =>
                 {
-                    dataListener.UpdatedNode(path, newNode, oldNode);
+                    try
+                    {
+                        Node fromNode = Node.CreateFrom(oldNode);
+                        Node toNode = Node.CreateFrom(newNode);
+                        dataListener.UpdatedNode(path, toNode, fromNode);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e, "NotifyUpdatedNode:");
+                    }
+
                 });
             }
         }

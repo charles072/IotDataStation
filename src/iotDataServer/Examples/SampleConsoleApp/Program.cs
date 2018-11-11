@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using NLog;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using IotDataServer;
-using IotDataServer = IotDataServer.DataServer;
+using NLog;
 
-namespace IotDataServerConsole
+namespace SampleConsoleApp
 {
     class Program
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-
             DataServer.SetDataGetter("TestGetter");
-            
 
             try
             {

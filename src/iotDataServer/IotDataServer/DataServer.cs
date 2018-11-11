@@ -32,7 +32,7 @@ namespace IotDataServer
         public static Assembly[] ExtensionAssemblies => ExtensionAssemblieList.ToArray();
 
         private static WebServer _webServer;
-        private static DataManager _dataManager;
+        private static DataManager _dataManager = new DataManager();
         private static ExtensionManager _extensionManager = null;
 
         public static IDataManager DataManager => _dataManager;
@@ -67,7 +67,7 @@ namespace IotDataServer
                     WebServicePort = webServicePort;
 
                     _extensionManager = new ExtensionManager(_dataManager, ExtensionModuleFolder, DataGetterSettings, DataListenerSettings, ExtensionAssemblies);
-                    _dataManager = new DataManager(_extensionManager.DataListeners);
+                    _dataManager.SetDataListeners(_extensionManager.DataListeners);
                     TemplateManager.TemplateFolder = WebTemplateFolder;
                     _webServer = new WebServer(WebServicePort, WebRootFolder);
 
@@ -86,12 +86,13 @@ namespace IotDataServer
                 {
                     _webServer?.Stop();
                     _webServer = null;
-                    _dataManager = null;
                     _extensionManager?.Stop();
                     _extensionManager?.Dispose();
                     _extensionManager = null;
 
                 }
+
+                IsStarted = res;
             }
             return res;
         }
@@ -106,7 +107,6 @@ namespace IotDataServer
                     {
                         _webServer?.Stop();
                         _webServer = null;
-                        _dataManager = null;
                         _extensionManager?.Stop();
                         _extensionManager?.Dispose();
                         _extensionManager = null;
@@ -116,6 +116,8 @@ namespace IotDataServer
                 {
                     Logger.Error(e, "Stop:");
                 }
+
+                IsStarted = false;
             }
         }
 
