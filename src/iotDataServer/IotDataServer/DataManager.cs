@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using IotDataServer.Common.DataModel;
 using IotDataServer.Common.Interface;
 using IotDataServer.Common.Util;
@@ -11,23 +12,18 @@ namespace IotDataServer
 {
     public class DataManager : IDataManager
     {
+        private readonly IDataListener[] _dataListeners;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        #region SingleTone
-        private static readonly Lazy<DataManager> Lazy = new Lazy<DataManager>(() => new DataManager());
-
-        public static DataManager Instance => Lazy.Value;
-        #endregion
-
-        private DataServerSetting _setting;
         private readonly Dictionary<string, Dictionary<string, INode>> _nodesDictionary = new Dictionary<string, Dictionary<string, INode>>();
-        private readonly Dictionary<string, NodeStatusSummary> _nodeStatusSummaryDictionary = new Dictionary<string, NodeStatusSummary>();
+        private readonly Dictionary<string, INodeStatusSummary> _nodeStatusSummaryDictionary = new Dictionary<string, INodeStatusSummary>();
 
-        public NodeStatusSummary[] NodeStatusSummaries => _nodeStatusSummaryDictionary.Values.ToArray();
-        public void Initialize(DataServerSetting setting)
+        public DataManager(IDataListener[] dataListeners)
         {
-            _setting = setting;
+            _dataListeners = dataListeners;
         }
+
+        public INodeStatusSummary[] NodeStatusSummaries => _nodeStatusSummaryDictionary.Values.ToArray();
 
         public INode[] GetNodes(string path)
         {
@@ -52,37 +48,49 @@ namespace IotDataServer
             return Node.CreateNullNode();
         }
 
-        public bool SetNode(string path, INode node)
+        public bool SetNode(string path, INode newNode)
         {
             path = path.Trim().Trim('/');
             bool res = true;
-            if (node == null || string.IsNullOrWhiteSpace(node.Id))
+
+            if (string.IsNullOrWhiteSpace(newNode?.Id))
             {
                 Logger.Debug("node is empty.");
                 return false;
             }
-            if (_nodesDictionary.TryGetValue(path, out var nodeDictionary))
+            try
             {
-                if (nodeDictionary.TryGetValue(node.Id, out var foundNode))
+                Node node = Node.CreateFrom(newNode);
+                if (_nodesDictionary.TryGetValue(path, out var nodeDictionary))
                 {
-                    nodeDictionary[node.Id] = node;
-                    if (node.Status != foundNode.Status)
+                    if (nodeDictionary.TryGetValue(node.Id, out var foundNode))
                     {
-                        ChangedNodeStatus(path, foundNode.Status, node.Status);
+                        nodeDictionary[node.Id] = node;
+                        if (node.Status != foundNode.Status)
+                        {
+                            ChangedNodeStatus(path, foundNode.Status, node.Status);
+                        }
+                        NotifyUpdatedNode(path, node, foundNode);
+                    }
+                    else
+                    {
+                        nodeDictionary[node.Id] = node;
+                        AddNewNodeStatus(path, node.Status);
+                        NotifyUpdatedNode(path, node, null);
                     }
                 }
                 else
                 {
-                    nodeDictionary[node.Id] = node;
+                    nodeDictionary = new Dictionary<string, INode> {[node.Id] = node};
+                    _nodesDictionary[path] = nodeDictionary;
                     AddNewNodeStatus(path, node.Status);
+                    NotifyUpdatedNode(path, node, null);
                 }
             }
-            else
+            catch (Exception e)
             {
-                nodeDictionary = new Dictionary<string, INode>(); 
-                nodeDictionary[node.Id] = node;
-                _nodesDictionary[path] = nodeDictionary;
-                AddNewNodeStatus(path, node.Status);
+                res = false;
+                Logger.Error(e, "SetNode");
             }
 
             return res;
@@ -110,7 +118,7 @@ namespace IotDataServer
                 NodeStatusSummary nodeStatusSummary = null;
                 if (_nodeStatusSummaryDictionary.TryGetValue(currentPath, out var foundNodeStatusSummary))
                 {
-                    nodeStatusSummary = foundNodeStatusSummary.Clone();
+                    nodeStatusSummary = ((NodeStatusSummary)foundNodeStatusSummary).Clone();
                 }
 
                 nodeStatusSummary = nodeStatusSummary ?? new NodeStatusSummary(currentPath);
@@ -131,7 +139,7 @@ namespace IotDataServer
             string[] splitPath = StringUtils.Split(path, '/');
             int pathDepth = splitPath.Length;
 
-            List<NodeStatusSummary> nodeStatusSummaryList = new List<NodeStatusSummary>();
+            List<INodeStatusSummary> nodeStatusSummaryList = new List<INodeStatusSummary>();
             nodeStatusSummaryList.AddRange(NodeStatusSummaries);
             nodeStatusSummaryList.Sort((x,y) =>
             {
@@ -212,6 +220,17 @@ namespace IotDataServer
                 }
             }
             return "";
+        }
+
+        private void NotifyUpdatedNode(string path, INode newNode, INode oldNode)
+        {
+            foreach (IDataListener dataListener in _dataListeners)
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    dataListener.UpdatedNode(path, newNode, oldNode);
+                });
+            }
         }
     }
 }

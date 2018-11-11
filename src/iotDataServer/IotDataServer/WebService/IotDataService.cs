@@ -41,7 +41,7 @@ namespace IotDataServer.WebService
         {
             List<PageLinkInfo> linkInfos = new List<PageLinkInfo>();
 
-            DataManager dataManager = DataManager.Instance;
+            IDataManager dataManager = DataServer.DataManager;
             var nodeStatusSummaries = dataManager.NodeStatusSummaries;
 
             foreach (var nodeStatusSummary in nodeStatusSummaries)
@@ -103,7 +103,7 @@ namespace IotDataServer.WebService
                 }
                 else
                 {
-                    DataManager dataManager = DataManager.Instance;
+                    IDataManager dataManager = DataServer.DataManager;
                     INode node = dataManager.GetNode(path, nodeId);
 
                     if (node != null)
@@ -161,7 +161,7 @@ namespace IotDataServer.WebService
                 }
                 else
                 {
-                    DataManager dataManager = DataManager.Instance;
+                    IDataManager dataManager = DataServer.DataManager;
                     if (dataManager.SetNode(path, node))
                     {
                         WebResponse.SendNodeResponseAsJson(context, node);
@@ -196,7 +196,7 @@ namespace IotDataServer.WebService
                     path = match.Groups["path"].Value;
                 }
 
-                DataManager dataManager = DataManager.Instance;
+                IDataManager dataManager = DataServer.DataManager;
                 INode[] nodes = dataManager.GetNodes(path);
                 if (responseFormat == "xml")
                 {
@@ -232,7 +232,7 @@ namespace IotDataServer.WebService
                     path = match.Groups["path"].Value;
                 }
 
-                DataManager dataManager = DataManager.Instance;
+                IDataManager dataManager = DataServer.DataManager;
                 var folder = dataManager.GetFolder(path, depth, includeNodes);
                 if (responseFormat == "xml")
                 {

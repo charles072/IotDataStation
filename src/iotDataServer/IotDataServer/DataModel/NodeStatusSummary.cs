@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using IotDataServer.Common.DataModel;
+using IotDataServer.Common.Interface;
 using IotDataServer.Common.Util;
 using NLog;
 
 namespace IotDataServer.DataModel
 {
-    public class NodeStatusSummary
+    public class NodeStatusSummary : INodeStatusSummary
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 

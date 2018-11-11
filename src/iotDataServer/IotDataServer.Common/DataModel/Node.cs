@@ -17,13 +17,22 @@ namespace IotDataServer.Common.DataModel
 
         public bool IsNullNode => string.IsNullOrWhiteSpace(Id);
 
-        public Node(string id, string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodePoint point = null, NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null) : base(id, name, status, groupName, point, attributes, items, updatedTime)
+        public Node(string id, string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodePoint point = null, NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null, string className = "") : base(id, name, status, groupName, point, attributes, items, updatedTime)
         {
+            if (!string.IsNullOrWhiteSpace(className))
+            {
+                ClassName = className;
+            }
         }
 
         public static INode CreateNullNode()
         {
             return new Node("", "", NodeStatus.None);
+        }
+
+        public static Node CreateFrom(INode iNode)
+        {
+            return new Node(iNode.Id, iNode.Name, iNode.Status, iNode.GroupName, iNode.Point, iNode.Attributes, iNode.Items, iNode.UpdatedTime, iNode.ClassName);
         }
 
         public static Node CreateFrom(JObject nodeObject)
@@ -103,5 +112,6 @@ namespace IotDataServer.Common.DataModel
 
             return node;
         }
+
     }
 }

@@ -58,26 +58,20 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="websocket-sharp, Version=1.0.4.0, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebSocketSharpFork.1.0.4.0\lib\net35\websocket-sharp.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataGetterManager.cs" />
     <Compile Include="DataManager.cs" />
     <Compile Include="DataModel\Folder.cs" />
     <Compile Include="DataModel\NodeStatusSummary.cs" />
     <Compile Include="DataModel\PageLinkInfo.cs" />
-    <Compile Include="DataServer.cs" />
-    <Compile Include="DataServerSetting.cs" />
-    <Compile Include="GetterSetting.cs" />
+    <Compile Include="ExtensionManager.cs" />
+    <Compile Include="DataListenerSetting.cs" />
+    <Compile Include="DataGetterSetting.cs" />
     <Compile Include="HttpServer\TemplateManager.cs" />
     <Compile Include="HttpServer\WebResponse.cs" />
     <Compile Include="HttpServer\WebServer.cs" />
     <Compile Include="HttpServer\WebServiceUtils.cs" />
-    <Compile Include="Notification\INotificationObserver.cs" />
-    <Compile Include="Notification\NotificationClient.cs" />
-    <Compile Include="Notification\NotificationMessage.cs" />
+    <Compile Include="DataServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebService\IotDataService.cs" />
   </ItemGroup>
@@ -97,11 +91,6 @@
       <Project>{ff67bab7-3ed0-4039-8d5a-34f483c3f90b}</Project>
       <Name>IotDataServer.Common</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DataServerSettings.sample.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -3,11 +3,10 @@ using IotDataServer.Common.DataModel;
 
 namespace IotDataServer.Common.Interface
 {
-    public interface IDataGetter : IDisposable
+    public interface IDataListener : IDisposable
     {
         void Initialize(string configFilepath, bool isTestMode, SimpleSettings settings, IDataManager dataManager);
         void UpdatedConfig(string configFilepath);
-        bool Start();
-        void Stop();
+        void UpdatedNode(string path, INode newNode, INode oldNode = null);
     }
 }

@@ -28,7 +28,7 @@ namespace IotDataServer.Common.DataGetter
             IsConfigUpdated = true;
         }
 
-        public virtual void UpdatedConfig()
+        public virtual void UpdatedConfig(string configFilepath)
         {
             IsConfigUpdated = true;
         }

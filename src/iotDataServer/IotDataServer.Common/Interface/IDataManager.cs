@@ -1,4 +1,5 @@
-﻿using IotDataServer.Common.DataModel;
+﻿using System.Collections;
+using IotDataServer.Common.DataModel;
 
 namespace IotDataServer.Common.Interface
 {
@@ -9,5 +10,6 @@ namespace IotDataServer.Common.Interface
         bool SetNode(string path, INode node);
 
         IFolder GetFolder(string path, int depth, bool includeNodes);
+        INodeStatusSummary[] NodeStatusSummaries { get; }
     }
 }

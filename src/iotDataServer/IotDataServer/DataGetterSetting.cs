@@ -3,27 +3,25 @@ using IotDataServer.Common.DataModel;
 
 namespace IotDataServer
 {
-    public class GetterSetting
+    public class DataGetterSetting
     {
         public string Name { get; set; }
         public string ConfigFile { get; set; }
         public bool IsTestMode { get; set; }
 
-        public SimpleSettings Settings => _settings;
+        public SimpleSettings Settings { get; }
 
-        private readonly SimpleSettings _settings = new SimpleSettings();
-
-        public GetterSetting(string name, string configFile="", bool isTestMode=false, SimpleSettings settings = null)
+        public DataGetterSetting(string name, string configFile = "", bool isTestMode = false, SimpleSettings settings = null)
         {
             Name = name;
             ConfigFile = configFile;
             IsTestMode = isTestMode;
-
+            Settings = new SimpleSettings();
             if (settings != null)
             {
                 foreach (KeyValuePair<string, string> keyValuePair in settings)
                 {
-                    _settings[keyValuePair.Key] = keyValuePair.Value;
+                    Settings[keyValuePair.Key] = keyValuePair.Value;
                 }
             }
         }

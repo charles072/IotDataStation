@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NLog;
 using IotDataServer;
+using IotDataServer = IotDataServer.DataServer;
 
 namespace IotDataServerConsole
 {
@@ -10,27 +11,22 @@ namespace IotDataServerConsole
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-            //Load setting form file.
-            //DataServerSetting setting = new DataServerSetting("DataServerSettings.sample.xml");
-            // Create setting in code
-            List<GetterSetting> getterSettings = new List<GetterSetting>();
-            getterSettings.Add(new GetterSetting("TestGetter"));
-            DataServerSetting setting = new DataServerSetting(31000, getterSettings);
-            DataServer server = new DataServer(setting);
+
+            DataServer.SetDataGetter("TestGetter");
+            
 
             try
             {
                 Logger.Info("Start ====================== ");
-                Logger.Info(setting);
-                server.Start();
+                DataServer.Start(31000);
                 Console.Read();
-                server.Stop();
+                DataServer.Stop();
                 Logger.Info("========================= End");
             }
             catch (Exception e)
             {
                 Logger.Error(e, "Main:");
-                server.Stop();
+                DataServer.Stop();
             }
 
             Console.Read();
