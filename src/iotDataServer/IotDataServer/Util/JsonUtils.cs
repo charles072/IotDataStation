@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace IotDataServer.Common.Util
+namespace IotDataServer.Util
 {
     internal static class JsonUtils
     {

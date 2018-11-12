@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IotDataServer.Common.Util
+namespace IotDataServer.Util
 {
     internal static class CachedDateTime
     {

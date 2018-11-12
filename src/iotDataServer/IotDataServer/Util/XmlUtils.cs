@@ -2,7 +2,7 @@
 using System.Text;
 using System.Xml;
 
-namespace IotDataServer.Common.Util
+namespace IotDataServer.Util
 {
     internal static class XmlUtils
     {
@@ -19,20 +19,13 @@ namespace IotDataServer.Common.Util
         {
             string resString;
             defaultValue = defaultValue ?? "";
-            if (node == null || node.Attributes == null)
+            if (node?.Attributes == null)
             {
                 resString = defaultValue;
             }
             else
             {
-                if (node.Attributes[name] != null)
-                {
-                    resString = node.Attributes[name].Value;
-                }
-                else
-                {
-                    resString = defaultValue;
-                }
+                resString = node.Attributes[name] != null ? node.Attributes[name].Value : defaultValue;
             }
 
 
@@ -47,7 +40,7 @@ namespace IotDataServer.Common.Util
         {
             string resString;
 
-            if (node == null || node.Attributes == null)
+            if (node?.Attributes == null)
             {
                 return defaultValue;
             }
@@ -83,10 +76,7 @@ namespace IotDataServer.Common.Util
 
             string stringValue = GetXmlAttributeValue(node, name, defaultValue.ToString(), false);
 
-            if (!int.TryParse(stringValue, out newResult))
-            {
-                newResult = defaultValue;
-            }
+            newResult = !int.TryParse(stringValue, out newResult) ? defaultValue : 0;
 
             return newResult;
         }
@@ -97,10 +87,7 @@ namespace IotDataServer.Common.Util
 
             string stringValue = GetXmlAttributeValue(node, name, defaultValue.ToString(), false);
 
-            if (!double.TryParse(stringValue, out newResult))
-            {
-                newResult = defaultValue;
-            }
+            newResult = !double.TryParse(stringValue, out newResult) ? defaultValue : 0.0d;
 
             return newResult;
         }
@@ -112,20 +99,20 @@ namespace IotDataServer.Common.Util
                 return 0;
             }
 
-            string attriValue = "";
+            string attributeValue = "";
             string tempValue = "";
 
             if (ignoreCase)
             {
-                attriValue = GetXmlAttributeValue(node, name).ToLower();
+                attributeValue = GetXmlAttributeValue(node, name).ToLower();
                 tempValue = compareValue.ToLower();
             }
             else
             {
-                attriValue = GetXmlAttributeValue(node, name);
+                attributeValue = GetXmlAttributeValue(node, name);
                 tempValue = compareValue;
             }
-            return System.String.Compare(attriValue, tempValue, System.StringComparison.Ordinal);
+            return System.String.Compare(attributeValue, tempValue, System.StringComparison.Ordinal);
         }
 
         public static string GetXmlNodeInnerText(XmlNode node, string xpath="", string defaultValue = "")
@@ -177,10 +164,7 @@ namespace IotDataServer.Common.Util
 
             string stringValue = GetXmlNodeInnerText(node, xpath);
 
-            if (!double.TryParse(stringValue, out newResult))
-            {
-                newResult = defaultValue;
-            }
+            newResult = !double.TryParse(stringValue, out newResult) ? defaultValue : 0.0d;
 
             return newResult;
         }
@@ -191,10 +175,7 @@ namespace IotDataServer.Common.Util
 
             string stringValue = GetXmlNodeInnerText(node, xpath);
 
-            if (!int.TryParse(stringValue, out newResult))
-            {
-                newResult = defaultValue;
-            }
+            newResult = !int.TryParse(stringValue, out newResult) ? defaultValue : 0;
 
             return newResult;
         }

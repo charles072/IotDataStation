@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace IotDataServer.Common.Util
+namespace IotDataServer.Util
 {
     internal class StringWriterWithEncoding : StringWriter
     {

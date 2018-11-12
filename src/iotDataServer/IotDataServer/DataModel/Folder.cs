@@ -6,6 +6,7 @@ using System.Xml;
 using IotDataServer.Common.DataModel;
 using IotDataServer.Common.Interface;
 using IotDataServer.Common.Util;
+using IotDataServer.Util;
 using Newtonsoft.Json.Linq;
 
 namespace IotDataServer.DataModel

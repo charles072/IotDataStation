@@ -4,6 +4,7 @@ using System.Linq;
 using IotDataServer.Common.DataModel;
 using IotDataServer.Common.Interface;
 using IotDataServer.Common.Util;
+using IotDataServer.Util;
 using NLog;
 
 namespace IotDataServer.DataModel
