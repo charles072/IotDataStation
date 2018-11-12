@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IotDataStation;
+﻿using IotDataStation;
+using System;
 using NLog;
 
 namespace SampleConsoleApp
@@ -16,7 +12,7 @@ namespace SampleConsoleApp
 
             DataStation.SetDataReporter("TestReporter");
             //DataStation.SetDataListener("TestGetter");
-            DataServer.SetDataListener("ElasticSearchListener");
+            DataStation.SetDataListener("ElasticSearchListener");
 
             try
             {

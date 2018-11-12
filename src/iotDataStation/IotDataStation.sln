@@ -19,10 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleExtensionModule", "Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleConsoleApp", "Examples\SampleConsoleApp\SampleConsoleApp.csproj", "{5A61F86A-5FBA-4D2E-A900-D103A055E5C2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{C29D2E62-6287-4254-95B8-3C2A47349FB2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticSearchListener", "Test\ElasticSearchListener\ElasticSearchListener.csproj", "{8190407E-4A1E-436C-8AF7-CA78882F6014}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,10 +49,6 @@ Global
 		{5A61F86A-5FBA-4D2E-A900-D103A055E5C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A61F86A-5FBA-4D2E-A900-D103A055E5C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A61F86A-5FBA-4D2E-A900-D103A055E5C2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8190407E-4A1E-436C-8AF7-CA78882F6014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8190407E-4A1E-436C-8AF7-CA78882F6014}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8190407E-4A1E-436C-8AF7-CA78882F6014}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8190407E-4A1E-436C-8AF7-CA78882F6014}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,7 +58,6 @@ Global
 		{FC01BE3E-5526-44B6-B49B-C063FA94ACF7} = {324CD39B-1DE8-4652-94B8-E58E25E3AAB3}
 		{A948AEEF-AC08-4427-91E9-B8ADB4AA88AF} = {324CD39B-1DE8-4652-94B8-E58E25E3AAB3}
 		{5A61F86A-5FBA-4D2E-A900-D103A055E5C2} = {324CD39B-1DE8-4652-94B8-E58E25E3AAB3}
-		{8190407E-4A1E-436C-8AF7-CA78882F6014} = {C29D2E62-6287-4254-95B8-3C2A47349FB2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4F29DF40-C932-41F0-82ED-2001B50BF846}

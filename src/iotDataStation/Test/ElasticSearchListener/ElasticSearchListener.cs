@@ -1,17 +1,17 @@
-﻿using IotDataServer.Common.DataModel;
-using IotDataServer.Common.Interface;
-using Nest;
+﻿using Nest;
+using NLog;
 using System;
 using System.IO;
 using System.Xml.Linq;
-using NLog;
+using IotDataStation.Common.DataModel;
+using IotDataStation.Common.Interface;
 
 namespace ElasticSearchListener
 {
     public class ElasticSearchListener : IDataListener
     {
         private ElasticClient _elasticClient;
-        public void Initialize(string configFilepath, bool isTestMode, SimpleSettings settings, IDataManager dataManager)
+        public void Initialize(string configFilepath, bool isTestMode, SimpleSettings settings, IDataRepository dataManager)
         {
             try
             {
