@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using IotDataStation.Common.Interface;
+using IotDataStation.Util;
 using NLog;
 
 namespace IotDataStation
@@ -98,7 +99,7 @@ namespace IotDataStation
         {
             try
             {
-                foreach (var type in assembly.GetTypes())
+                foreach (var type in assembly.GetLoadableTypes())
                 {
                     if (IsDataReporter(type))
                     {
@@ -209,7 +210,6 @@ namespace IotDataStation
             {
                 Logger.Error(e, "InitializeExtensions:");
             }
-
         }
 
         public void Start()

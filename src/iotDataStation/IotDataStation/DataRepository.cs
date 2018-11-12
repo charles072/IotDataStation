@@ -11,7 +11,7 @@ using NLog;
 
 namespace IotDataStation
 {
-    public class DataRepository : IDataRepository
+    internal class DataRepository : IDataRepository
     {
         private IDataListener[] _dataListeners = new IDataListener[0];
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
