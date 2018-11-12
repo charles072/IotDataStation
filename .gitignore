@@ -159,3 +159,4 @@ $RECYCLE.BIN/
 /.gitattributes
 /backup
 /NCSFactoryEditor/packages/NLog.4.5.4
+/src/iotDataStation/Examples/SampleConsoleApp/Program.cs~HEAD
