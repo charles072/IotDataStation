@@ -14,6 +14,7 @@ namespace SampleConsoleApp
         static void Main(string[] args)
         {
             DataServer.SetDataGetter("TestGetter");
+            DataServer.SetDataListener("ElasticSearchListener");
 
             try
             {
