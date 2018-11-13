@@ -26,12 +26,12 @@ namespace IotDataStation.Common.DataModel
             set => _groupName = value;
         }
 
-        public string Id { get; }
-        public string Name { get; }
-        public NodeStatus Status { get; }
+        public string Id { get; set;}
+        public string Name { get; set; }
+        public NodeStatus Status { get; set; }
 
         public DateTime UpdatedTime { get; set; }
-        public NodePoint Point { get; }
+        public NodePoint Point { get; set; }
         public NodeAttributes Attributes { get; }
         public NodeItems Items { get; }
 
