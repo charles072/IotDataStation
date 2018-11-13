@@ -72,8 +72,9 @@
     <Compile Include="HttpServer\TemplateManager.cs" />
     <Compile Include="HttpServer\WebResponse.cs" />
     <Compile Include="HttpServer\WebServer.cs" />
-    <Compile Include="HttpServer\WebServiceUtils.cs" />
+    <Compile Include="WebService\WebServiceUtils.cs" />
     <Compile Include="DataStation.cs" />
+    <Compile Include="Interface\IAuthentication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\DateTimeUtils.cs" />
     <Compile Include="Util\JsonUtils.cs" />
@@ -100,5 +101,6 @@
       <Name>IotDataStation.Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

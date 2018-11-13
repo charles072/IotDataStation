@@ -9,6 +9,7 @@ using NLog;
 using IotDataStation.Common.Interface;
 using IotDataStation.Common.Util;
 using IotDataStation.Util;
+using IotDataStation.WebService;
 using Newtonsoft.Json.Linq;
 using ContentType = Grapevine.Shared.ContentType;
 

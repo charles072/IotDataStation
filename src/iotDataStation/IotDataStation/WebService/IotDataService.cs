@@ -28,6 +28,10 @@ namespace IotDataStation.WebService
         {
             try
             {
+                if (WebServiceUtils.CheckAuthentication(context))
+                {
+                    return context;
+                }
                 context.Response.SendResponse(HttpStatusCode.Ok, TemplateManager.Rander("PageLinks", GetServicePageList()), Encoding.UTF8);
             }
             catch (Exception e)
@@ -86,6 +90,11 @@ namespace IotDataStation.WebService
         {
             try
             {
+                if (WebServiceUtils.CheckAuthentication(context))
+                {
+                    return context;
+                }
+
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
                 string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
 
@@ -135,6 +144,11 @@ namespace IotDataStation.WebService
         {
             try
             {
+                if (WebServiceUtils.CheckAuthentication(context))
+                {
+                    return context;
+                }
+
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
                 string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
 
@@ -187,6 +201,11 @@ namespace IotDataStation.WebService
         {
             try
             {
+                if (WebServiceUtils.CheckAuthentication(context))
+                {
+                    return context;
+                }
+
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
                 string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
 
@@ -221,6 +240,11 @@ namespace IotDataStation.WebService
         {
             try
             {
+                if (WebServiceUtils.CheckAuthentication(context))
+                {
+                    return context;
+                }
+
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
                 string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
                 int depth = StringUtils.GetIntValue(WebServiceUtils.GetQueryStringValue(webParameter, "depth", "1"), 1);
