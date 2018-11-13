@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using IotDataStation.Common.Interface;
-using IotDataStation.Common.Util;
 using IotDataStation.Common.Util;
 using Newtonsoft.Json.Linq;
 using NLog;
@@ -18,7 +13,7 @@ namespace IotDataStation.Common.DataModel
 
         public bool IsNullNode => string.IsNullOrWhiteSpace(Id);
 
-        public Node(string id, string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodePoint point = null, NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null, string className = "") : base(id, name, status, groupName, point, attributes, items, updatedTime)
+        public Node(string id = "", string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodePoint point = null, NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null, string className = "") : base(id, name, status, groupName, point, attributes, items, updatedTime)
         {
             if (!string.IsNullOrWhiteSpace(className))
             {
