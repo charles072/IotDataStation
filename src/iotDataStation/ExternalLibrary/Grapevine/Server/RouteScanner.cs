@@ -279,6 +279,7 @@ namespace Grapevine.Server
 
             try
             {
+
                 foreach (var type in assembly.GetTypes().Where(t => t.IsRestResource()).OrderBy(m => m.Name))
                 {
                     if (IsExcluded(type) || !IsIncluded(type)) continue;
@@ -287,7 +288,7 @@ namespace Grapevine.Server
 
             } catch(ReflectionTypeLoadException e)
             {
-                foreach (var type in e.Types.Where(t=> t != null).Where(t => t.IsRestResource()).OrderBy(m => m.Name))
+                foreach (var type in e.Types.Where(t => t != null).Where(t => t.IsRestResource()).OrderBy(m => m.Name))
                 {
                     if (IsExcluded(type) || !IsIncluded(type)) continue;
                     routes.AddRange(ScanType(type, basePath));

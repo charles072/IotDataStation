@@ -33,6 +33,18 @@ namespace IotDataStation
         private readonly IDataRepository _dataRepository;
         private readonly string _extensionsPath;
 
+        public static readonly List<Assembly> Assemblies;
+        static ExtensionManager()
+        {
+            Assemblies = new List<Assembly>();
+            foreach (
+                var assembly in
+                AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => !a.GlobalAssemblyCache && a.GetName().Name != "IotDataStation" && !a.GlobalAssemblyCache && a.GetName().Name != "IotDataStation.Common" && !a.GlobalAssemblyCache && a.GetName().Name != "Grapevine" && !a.GetName().Name.StartsWith("vshost"))
+                    .OrderBy(a => a.FullName))
+            { Assemblies.Add(assembly); }
+        }
+
         public ExtensionManager(DataRepository dataRepository, string extensionModuleFolder, DataReporterSetting[] dataReporterSettings = null, DataListenerSetting[] dataListenerSettings = null, Assembly[] assemblies = null)
         {
             _dataRepository = dataRepository;
@@ -56,11 +68,20 @@ namespace IotDataStation
             _configFolderWatcher.EnableRaisingEvents = true;
         }
 
+
+
         private void LoadExtensions(string extensionsPath, Assembly[] assemblies = null)
         {
             try
             {
-                if (assemblies != null)
+                if (assemblies == null || assemblies.Length == 0)
+                {
+                    foreach (Assembly assembly in Assemblies)
+                    {
+                        LoadExtensions(assembly);
+                    }
+                }
+                else
                 {
                     foreach (Assembly assembly in assemblies)
                     {
@@ -78,7 +99,7 @@ namespace IotDataStation
                             try
                             {
                                 string dllFilename = file.FullName;
-                                Assembly assembly = Assembly.LoadFile(dllFilename);
+                                Assembly assembly = Assembly.LoadFrom(dllFilename);
                                 LoadExtensions(assembly);
                             }
                             catch (Exception e)
@@ -160,6 +181,10 @@ namespace IotDataStation
                                 _dataListenerDictionary[extensionType.Name] = extension;
 
                                 string configFilepath = Path.Combine(_extensionsPath, extensionSetting.ConfigFile);
+                                if (string.IsNullOrWhiteSpace(extensionSetting.ConfigFile))
+                                {
+                                    configFilepath = Path.Combine(_extensionsPath, $"{extensionSetting.Name}.xml");
+                                }
                                 extension?.Initialize(configFilepath, extensionSetting.IsTestMode, extensionSetting.Settings, _dataRepository);
                             }
                             else

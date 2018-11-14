@@ -10,6 +10,8 @@ namespace ElasticSearchListener
 {
     public class ElasticSearchListener : IDataListener
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private ElasticClient _elasticClient;
         public void Initialize(string configFilepath, bool isTestMode, SimpleSettings settings, IDataRepository dataManager)
         {
@@ -24,13 +26,13 @@ namespace ElasticSearchListener
             }
             catch (Exception e)
             {
-                throw e;
+                Logger.Error(e, "Initialize");
             }
         }
 
         public void UpdatedConfig(string configFilepath)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void UpdatedNode(string path, INode newNode, INode oldNode = null)
