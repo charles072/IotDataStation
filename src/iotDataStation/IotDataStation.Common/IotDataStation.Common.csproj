@@ -72,6 +72,7 @@
     <Compile Include="DataGetter\PollingDataReporterBase.cs" />
     <Compile Include="Interface\INodeStatusSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ConcurrentList.cs" />
     <Compile Include="Util\DateTimeUtils.cs" />
     <Compile Include="Util\JsonUtils.cs" />
     <Compile Include="Util\StringUtils.cs" />

@@ -1,3 +1,3 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
-<ELKUrl>http://172.16.10.160:9300/</ELKUrl>
+<ELKUrl>http://172.16.10.160:9200/</ELKUrl>
 
