@@ -28,7 +28,7 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (WebServiceUtils.CheckAuthentication(context))
+                if (!WebServiceUtils.CheckAuthentication(context))
                 {
                     return context;
                 }
@@ -90,7 +90,7 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (WebServiceUtils.CheckAuthentication(context))
+                if (!WebServiceUtils.CheckAuthentication(context))
                 {
                     return context;
                 }
@@ -144,7 +144,7 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (WebServiceUtils.CheckAuthentication(context))
+                if (!WebServiceUtils.CheckAuthentication(context))
                 {
                     return context;
                 }
@@ -201,7 +201,7 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (WebServiceUtils.CheckAuthentication(context))
+                if (!WebServiceUtils.CheckAuthentication(context))
                 {
                     return context;
                 }
@@ -240,7 +240,7 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (WebServiceUtils.CheckAuthentication(context))
+                if (!WebServiceUtils.CheckAuthentication(context))
                 {
                     return context;
                 }
