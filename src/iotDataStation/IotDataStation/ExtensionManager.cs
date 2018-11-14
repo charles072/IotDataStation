@@ -68,8 +68,6 @@ namespace IotDataStation
             _configFolderWatcher.EnableRaisingEvents = true;
         }
 
-
-
         private void LoadExtensions(string extensionsPath, Assembly[] assemblies = null)
         {
             try
