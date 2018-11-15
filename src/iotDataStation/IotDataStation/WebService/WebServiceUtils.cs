@@ -23,8 +23,43 @@ namespace IotDataStation.WebService
 
         public static NameValueCollection GetNameValueCollection(IHttpContext context)
         {
-            return context.Request.HttpMethod == HttpMethod.GET ? context.Request.QueryString : HttpUtility.ParseQueryString(context.Request.Payload);
+            NameValueCollection nameValueCollection = new NameValueCollection();
+            var getQueryString = context.Request.QueryString;
+            if (getQueryString != null)
+            {
+                foreach (string key in getQueryString.Keys)
+                {
+                    try
+                    {
+                        nameValueCollection[key] = getQueryString.Get(key).Trim();
+                    }
+                    catch
+                    {
+                        //Ignore;
+                    }
+                }
+            }
+            if (context.Request.HttpMethod == HttpMethod.POST)
+            {
+                if (context.Request.Headers["Content-Type"].Contains("application/x-www-form-urlencoded"))
+                {
+                    var queryString = HttpUtility.ParseQueryString(context.Request.Payload);
+                    foreach (string key in queryString.Keys)
+                    {
+                        try
+                        {
+                            nameValueCollection[key] = queryString.Get(key).Trim();
+                        }
+                        catch
+                        {
+                            //Ignore;
+                        }
+                    }
+                }
+            }
+            return nameValueCollection;
         }
+
         public static string GetQueryStringValue(NameValueCollection qscoll, string name, string defaultValue = "")
         {
             if (qscoll == null)

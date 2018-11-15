@@ -8,6 +8,7 @@ namespace IotDataStation
         public string Name { get; set; }
         public string ConfigFile { get; set; }
         public bool IsTestMode { get; set; }
+        internal bool IsLoaded { get; set; } = false;
 
         public SimpleSettings Settings { get; }
 

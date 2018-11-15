@@ -8,8 +8,8 @@ namespace IotDataStation
         public string Name { get; set; }
         public string ConfigFile { get; set; }
         public bool IsTestMode { get; set; }
-
         public SimpleSettings Settings { get; }
+        internal bool IsLoaded { get; set; } = false;
 
         public DataListenerSetting(string name, string configFile = "", bool isTestMode = false, SimpleSettings settings = null)
         {

@@ -17,8 +17,8 @@ namespace IotDataStation
         private static readonly Type DataReporterInterfaceType = typeof(IDataReporter);
         private static readonly Type DataListenerInterfaceType = typeof(IDataListener);
 
-        private DataReporterSetting[] _dataReporterSettings = null;
-        private DataListenerSetting[] _dataListenerSettings = null;
+        private Dictionary<string, DataReporterSetting> _dataReporterSettingDictionary = new Dictionary<string, DataReporterSetting>();
+        private Dictionary<string, DataListenerSetting> _dataListenerSettingDictionary = new Dictionary<string, DataListenerSetting>();
 
         Dictionary<string, Type> _dataReporterTypeDictionary = new Dictionary<string, Type>();
         Dictionary<string, Type> _dataListenerTypeDictionary = new Dictionary<string, Type>();
@@ -56,8 +56,28 @@ namespace IotDataStation
                 Directory.CreateDirectory(_extensionsPath);
             }
 
-            _dataReporterSettings = dataReporterSettings ?? new DataReporterSetting[0];
-            _dataListenerSettings = dataListenerSettings ?? new DataListenerSetting[0];
+            if (dataReporterSettings != null)
+            {
+                foreach (var setting in dataReporterSettings)
+                {
+                    _dataReporterSettingDictionary[setting.Name] = setting;
+                }
+            }
+            else
+            {
+                _dataReporterSettingDictionary["*"] = new DataReporterSetting("*");
+            }
+            if (dataListenerSettings != null)
+            {
+                foreach (var setting in dataListenerSettings)
+                {
+                    _dataListenerSettingDictionary[setting.Name] = setting;
+                }
+            }
+            else
+            {
+                _dataListenerSettingDictionary["*"] = new DataListenerSetting("*");
+            }
             LoadExtensions(_extensionsPath, assemblies);
 
             InitializeExtensions();
@@ -168,10 +188,18 @@ namespace IotDataStation
         {
             try
             {
-                foreach (var extensionSetting in _dataListenerSettings)
+                foreach (Type extensionType in _dataListenerTypeDictionary.Values)
                 {
-                    if (_dataListenerTypeDictionary.TryGetValue(extensionSetting.Name, out Type extensionType))
+                    DataListenerSetting extensionSetting = null;
+                    if (!_dataListenerSettingDictionary.TryGetValue(extensionType.Name, out extensionSetting))
                     {
+                        if (!_dataListenerSettingDictionary.TryGetValue("*", out extensionSetting))
+                        {
+                            extensionSetting = null;
+                        }
+                    }
+
+                    if (extensionSetting != null) { 
                         try
                         {
                             if (Activator.CreateInstance(extensionType) is IDataListener extension)
@@ -184,6 +212,7 @@ namespace IotDataStation
                                     configFilepath = Path.Combine(_extensionsPath, $"{extensionSetting.Name}.xml");
                                 }
                                 extension?.Initialize(configFilepath, extensionSetting.IsTestMode, extensionSetting.Settings, _dataRepository);
+                                extensionSetting.IsLoaded = true;
                             }
                             else
                             {
@@ -195,22 +224,34 @@ namespace IotDataStation
                             Logger.Error(e, $"Cannot initialize '{extensionSetting.Name}' as a IDataListener.");
                         }
                     }
-                    else
-                    {
-                        Logger.Error($"Cannot find IDataListener '{extensionSetting.Name}'.");
-                    }
                 }
-                foreach (var extensionSetting in _dataReporterSettings)
+
+                foreach (Type extensionType in _dataReporterTypeDictionary.Values)
                 {
-                    if (_dataReporterTypeDictionary.TryGetValue(extensionSetting.Name, out Type extensionType))
+                    DataReporterSetting extensionSetting = null;
+                    if (!_dataReporterSettingDictionary.TryGetValue(extensionType.Name, out extensionSetting))
+                    {
+                        if (!_dataReporterSettingDictionary.TryGetValue("*", out extensionSetting))
+                        {
+                            extensionSetting = null;
+                        }
+                    }
+
+                    if (extensionSetting != null)
                     {
                         try
                         {
                             if (Activator.CreateInstance(extensionType) is IDataReporter extension)
                             {
                                 _dataReporterDictionary[extensionType.Name] = extension;
+
                                 string configFilepath = Path.Combine(_extensionsPath, extensionSetting.ConfigFile);
+                                if (string.IsNullOrWhiteSpace(extensionSetting.ConfigFile))
+                                {
+                                    configFilepath = Path.Combine(_extensionsPath, $"{extensionSetting.Name}.xml");
+                                }
                                 extension?.Initialize(configFilepath, extensionSetting.IsTestMode, extensionSetting.Settings, _dataRepository);
+                                extensionSetting.IsLoaded = true;
                             }
                             else
                             {
@@ -221,9 +262,18 @@ namespace IotDataStation
                         {
                             Logger.Error(e, $"Cannot initialize '{extensionSetting.Name}' as a IDataReporter.");
                         }
-                        
                     }
-                    else
+                }
+                foreach (var extensionSetting in _dataListenerSettingDictionary.Values)
+                {
+                    if (!extensionSetting.IsLoaded)
+                    {
+                        Logger.Error($"Cannot find IDataListener '{extensionSetting.Name}'.");
+                    }
+                }
+                foreach (var extensionSetting in _dataReporterSettingDictionary.Values)
+                {
+                    if (!extensionSetting.IsLoaded)
                     {
                         Logger.Error($"Cannot find IDataReporter '{extensionSetting.Name}'.");
                     }
@@ -269,7 +319,7 @@ namespace IotDataStation
         {
             string fileName = e.Name;
             string filepath = e.FullPath;
-            foreach (DataReporterSetting getterSetting in _dataReporterSettings)
+            foreach (DataReporterSetting getterSetting in _dataReporterSettingDictionary.Values)
             {
                 if (getterSetting.ConfigFile == fileName)
                 {
@@ -281,7 +331,7 @@ namespace IotDataStation
                 }
             }
 
-            foreach (DataListenerSetting dataListenerSetting in _dataListenerSettings)
+            foreach (DataListenerSetting dataListenerSetting in _dataListenerSettingDictionary.Values)
             {
                 if (dataListenerSetting.ConfigFile == fileName)
                 {
@@ -309,8 +359,8 @@ namespace IotDataStation
             }
             _dataReporterDictionary.Clear();
 
-            _dataReporterSettings = null;
-            _dataListenerSettings = null;
+            _dataReporterSettingDictionary.Clear();
+            _dataListenerSettingDictionary.Clear();
 
             _dataListenerTypeDictionary = null;
             _dataReporterTypeDictionary = null;

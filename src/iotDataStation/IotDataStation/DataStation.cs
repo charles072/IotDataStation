@@ -164,7 +164,7 @@ namespace IotDataStation
             }
         }
 
-        public bool SetAuthentication(IAuthentication authentication)
+        public static bool SetAuthentication(IAuthentication authentication)
         {
             if (authentication == null)
             {

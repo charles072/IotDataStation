@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using IotDataStation.Common.Util;
-using IotDataStation.Common.Util;
 using Newtonsoft.Json.Linq;
 using NLog;
 
