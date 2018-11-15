@@ -155,7 +155,8 @@ namespace IotDataStation.Common.DataModel
 
             if (Point != null)
             {
-                nodeObject["point"] = Point.ToJObject();
+                ////nodeObject["point"] = Point.ToJObject();
+                nodeObject["point"] = Point.ToJArray();
             }
 
             if (Items.Count > 0)

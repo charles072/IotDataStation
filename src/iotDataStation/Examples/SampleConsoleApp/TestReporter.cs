@@ -34,10 +34,10 @@ namespace SampleConsoleApp
                 sen001_1.SetItem("위치", "1층 현관 출입문");
                 sen001_1.SetItem("상태", "닫침");
                 DataRepository.SetNode("sensor/basic", sen001_1);
-                var sen001_2 = new Node("sen001_2", "1층 화제 센서");
+                NodePoint point = new NodePoint(37.1235, 127.2222);
+                var sen001_2 = new Node("sen001_2", "1층 화제 센서", NodeStatus.Normal, point: point);
                 double temperature = Math.Round(_random.NextDouble() * 30.0, 1);
                 sen001_2.Attributes["Temperature"] = $"{temperature}";
-                sen001_2.Attributes["location"] = "37.1235,127.2222";
                 sen001_2.SetItem("온도", $"{temperature}도");
                 DataRepository.SetNode("sensor/basic", sen001_2);
 

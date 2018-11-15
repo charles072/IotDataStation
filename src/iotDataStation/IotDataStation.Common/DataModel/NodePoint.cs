@@ -22,10 +22,17 @@ namespace IotDataStation.Common.DataModel
         public JObject ToJObject()
         {
             JObject pointObject = new JObject();
-
             pointObject["x"] = X;
             pointObject["y"] = Y;
             return pointObject;
+        }
+
+        public JArray ToJArray()
+        {
+            JArray pointArray = new JArray();
+            pointArray.Add(Y);
+            pointArray.Add(X);
+            return pointArray;
         }
 
         public void WriteXml(XmlWriter xmlWriter)

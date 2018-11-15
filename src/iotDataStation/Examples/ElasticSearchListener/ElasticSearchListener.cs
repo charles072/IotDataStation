@@ -4,11 +4,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Elasticsearch.Net;
 using IotDataStation.Common.DataModel;
 using IotDataStation.Common.Interface;
 using IotDataStation.Common.Util;
+using Newtonsoft.Json.Linq;
 
 namespace ElasticSearchListener
 {
@@ -16,6 +19,7 @@ namespace ElasticSearchListener
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private ElasticClient _elasticClient;
+        private ElasticLowLevelClient _elasticLowLevelClient;
 
         private volatile List<string> _indexPath;
 
@@ -33,6 +37,9 @@ namespace ElasticSearchListener
                 XDocument xDocument = XDocument.Load(configFilepath);
                 var elkurl = xDocument.Element("ELKUrl")?.Value;
                 _elasticClient = new ElasticClient(new Uri(elkurl));
+                _elasticLowLevelClient =
+                    new ElasticLowLevelClient(
+                        new ConnectionConfiguration(new SniffingConnectionPool(new List<Uri>() {new Uri(elkurl)})));
                 _indexPath = new List<string>();
                 _addDocumentQueue = new ConcurrentBag<object[]>();
                 Task.Factory.StartNew(new Action(UpdateNodeRun));
@@ -45,22 +52,33 @@ namespace ElasticSearchListener
 
         private void UpdateNodeRun()
         {
-            while (true)
+            try
             {
-                while (!_addDocumentQueue.IsEmpty)
+                while (true)
                 {
-                    object[] addedDocument;
-                    if (_addDocumentQueue.TryPeek(out addedDocument))
+                    while (!_addDocumentQueue.IsEmpty)
                     {
-                        var path = (string) addedDocument[0];
-                        if (_elasticClient.IndexExists(path).Exists)
+                        object[] addedDocument;
+                        if (_addDocumentQueue.TryPeek(out addedDocument))
                         {
-                            _addDocumentQueue.TryTake(out addedDocument);
-                            _elasticClient.Index((INode) addedDocument[1],
-                                i => i.Index((string) addedDocument[0]).Id(Guid.NewGuid().ToString()));
+                            var path = (string) addedDocument[0];
+                            if (_elasticClient.IndexExists(path).Exists)
+                            {
+                                _addDocumentQueue.TryTake(out addedDocument);
+                                INode node = addedDocument[1] as INode;
+                                var jObject = node.ToJObject();
+                                //_elasticClient.Index(jObject.ToString(Newtonsoft.Json.Formatting.None),
+                                //    i => i.Index((string) addedDocument[0]).Id(Guid.NewGuid().ToString()));
+                                _elasticLowLevelClient.Index<BytesResponse>(path, node.GroupName,
+                                    PostData.String(jObject.ToString()));
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 
@@ -73,26 +91,23 @@ namespace ElasticSearchListener
         {
             try
             {
-                path = path.Replace("/", "_");
+                path = path.Replace("/", ".");
+                //////var st = newNode.ToJObject().ToString();
                 // path 별로 IndexExist 를 확인하여 
                 // 없으면 추가하고 
                 // 있으면 큐에 담기
-                if (!_indexPath.Contains(path))
+                if (!_elasticClient.IndexExists(path).Exists && !_indexPath.Contains(path))
                 {
-                    _elasticClient.CreateIndex(path, c => c.Mappings(ms => ms.Map<INode>(m => m.AutoMap())));
+                    //_elasticClient.CreateIndex(path, c => c);
+                    //_elasticClient.CreateIndex(path, c => c.Mappings(ms => ms.Map<JObject>(m => m.AutoMap())));
+                    var response = _elasticLowLevelClient.Index<BytesResponse>(path, newNode.GroupName, PostData.String(newNode.ToJObject().ToString()));
                     _indexPath.Add(path);
                 }
                 else
                 {
-                    _addDocumentQueue.Add(new object[] {path, newNode});
+                    if (path.Equals("sensor.basic"))
+                        _addDocumentQueue.Add(new object[] {path + 3, newNode});
                 }
-
-                //////if (_elasticClient.IndexExists(path).Exists)
-                //////    /// TODO : api 테스트 필요
-                //////    _elasticClient.Index(newNode, i => i.Index("path"));
-                //////else
-                //////    /// TODO : api 테스트 필요
-                //////    _elasticClient.CreateIndex(path, c => c.Mappings(ms => ms.Map<INode>(m => m.AutoMap())));
             }
             catch (Exception e)
             {
