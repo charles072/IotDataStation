@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Xml;
 using IotDataStation.Common.Util;
-using IotDataStation.Common.Util;
 using Newtonsoft.Json.Linq;
 using NLog;
 
