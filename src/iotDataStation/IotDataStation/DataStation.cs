@@ -23,6 +23,7 @@ namespace IotDataStation
         public static string WebRootFolder => "WebRoot";
         public static string WebTemplateFolder => "WebTemplates";
         public static string ExtensionModuleFolder => "ExtensionModules";
+        public static IotDataResponseFormat DefaultResponseFormat { get; set; } = IotDataResponseFormat.Json;
 
         private static readonly Dictionary<string, DataReporterSetting> DataReporterSettingDictionary = new Dictionary<string, DataReporterSetting>();
         public static DataReporterSetting[] DataReporterSettings => DataReporterSettingDictionary.Values.ToArray();
@@ -176,16 +177,17 @@ namespace IotDataStation
         }
     }
 
+    public enum IotDataResponseFormat
+    {
+        Json = 0,
+        Xml
+    }
+
     public class NoneAuthentication : IAuthentication
     {
-        public bool ValidateUser(IHttpContext context)
+        public bool ValidateUser(IHttpContext context, string path)
         {
             return true;
-        }
-
-        public string GetLoginPageUri(IHttpContext context)
-        {
-            return "/iot/";
         }
     }
 }

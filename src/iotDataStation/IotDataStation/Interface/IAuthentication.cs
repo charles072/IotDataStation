@@ -4,7 +4,6 @@ namespace IotDataStation.Interface
 {
     public interface IAuthentication
     {
-        bool ValidateUser(IHttpContext context);
-        string GetLoginPageUri(IHttpContext context);
-    }
+        bool ValidateUser(IHttpContext context, string path);
+   }
 }

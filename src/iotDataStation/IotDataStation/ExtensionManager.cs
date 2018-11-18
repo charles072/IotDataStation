@@ -56,7 +56,7 @@ namespace IotDataStation
                 Directory.CreateDirectory(_extensionsPath);
             }
 
-            if (dataReporterSettings != null)
+            if (dataReporterSettings != null && dataReporterSettings.Length > 0)
             {
                 foreach (var setting in dataReporterSettings)
                 {
@@ -65,9 +65,12 @@ namespace IotDataStation
             }
             else
             {
-                _dataReporterSettingDictionary["*"] = new DataReporterSetting("*");
+                _dataReporterSettingDictionary["*"] = new DataReporterSetting("*")
+                {
+                    IsLoaded = true
+                };
             }
-            if (dataListenerSettings != null)
+            if (dataListenerSettings != null && dataListenerSettings.Length > 0)
             {
                 foreach (var setting in dataListenerSettings)
                 {
@@ -76,7 +79,10 @@ namespace IotDataStation
             }
             else
             {
-                _dataListenerSettingDictionary["*"] = new DataListenerSetting("*");
+                _dataListenerSettingDictionary["*"] = new DataListenerSetting("*")
+                {
+                    IsLoaded = true
+                };
             }
             LoadExtensions(_extensionsPath, assemblies);
 
@@ -204,8 +210,6 @@ namespace IotDataStation
                         {
                             if (Activator.CreateInstance(extensionType) is IDataListener extension)
                             {
-                                _dataListenerDictionary[extensionType.Name] = extension;
-
                                 string configFilepath = Path.Combine(_extensionsPath, extensionSetting.ConfigFile);
                                 if (string.IsNullOrWhiteSpace(extensionSetting.ConfigFile))
                                 {
@@ -213,6 +217,8 @@ namespace IotDataStation
                                 }
                                 extension?.Initialize(configFilepath, extensionSetting.IsTestMode, extensionSetting.Settings, _dataRepository);
                                 extensionSetting.IsLoaded = true;
+
+                                _dataListenerDictionary[extensionType.Name] = extension;
                             }
                             else
                             {
@@ -248,7 +254,7 @@ namespace IotDataStation
                                 string configFilepath = Path.Combine(_extensionsPath, extensionSetting.ConfigFile);
                                 if (string.IsNullOrWhiteSpace(extensionSetting.ConfigFile))
                                 {
-                                    configFilepath = Path.Combine(_extensionsPath, $"{extensionSetting.Name}.xml");
+                                    configFilepath = Path.Combine(_extensionsPath, $"{extensionType.Name}.xml");
                                 }
                                 extension?.Initialize(configFilepath, extensionSetting.IsTestMode, extensionSetting.Settings, _dataRepository);
                                 extensionSetting.IsLoaded = true;

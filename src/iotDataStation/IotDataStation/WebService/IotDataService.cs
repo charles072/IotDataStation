@@ -28,7 +28,7 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (!WebServiceUtils.CheckAuthentication(context))
+                if (!WebServiceUtils.CheckAuthentication(context, ""))
                 {
                     return context;
                 }
@@ -90,13 +90,8 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (!WebServiceUtils.CheckAuthentication(context))
-                {
-                    return context;
-                }
-
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
-                string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
+                IotDataResponseFormat responseFormat = StringUtils.ToEnum(WebServiceUtils.GetQueryStringValue(webParameter, "format", DataStation.DefaultResponseFormat.ToString()), DataStation.DefaultResponseFormat);
 
                 string path = "";
                 string nodeId = "";
@@ -105,6 +100,11 @@ namespace IotDataStation.WebService
                 {
                     path = match.Groups["path"].Value;
                     nodeId = match.Groups["nodeId"].Value;
+                }
+
+                if (!WebServiceUtils.CheckAuthentication(context, path))
+                {
+                    return context;
                 }
 
                 if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(nodeId))
@@ -118,7 +118,7 @@ namespace IotDataStation.WebService
 
                     if (node != null)
                     {
-                        if (responseFormat == "xml")
+                        if (responseFormat == IotDataResponseFormat.Xml)
                         {
                             WebResponse.SendNodeResponseAsXml(context, node);
                         }
@@ -144,13 +144,8 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (!WebServiceUtils.CheckAuthentication(context))
-                {
-                    return context;
-                }
-
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
-                string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
+                IotDataResponseFormat responseFormat = StringUtils.ToEnum(WebServiceUtils.GetQueryStringValue(webParameter, "format", DataStation.DefaultResponseFormat.ToString()), DataStation.DefaultResponseFormat);
 
                 string path = "";
                 string nodeId = "";
@@ -160,6 +155,11 @@ namespace IotDataStation.WebService
                     path = match.Groups["path"].Value;
                     nodeId = match.Groups["nodeId"].Value;
                 }
+                if (!WebServiceUtils.CheckAuthentication(context, path))
+                {
+                    return context;
+                }
+
 
                 string jsonString = context.Request.Payload;
                 
@@ -179,7 +179,14 @@ namespace IotDataStation.WebService
                     IDataRepository dataRepository = DataStation.DataRepository;
                     if (dataRepository.SetNode(path, node))
                     {
-                        WebResponse.SendNodeResponseAsJson(context, node);
+                        if (responseFormat == IotDataResponseFormat.Xml)
+                        {
+                            WebResponse.SendNodeResponseAsXml(context, node);
+                        }
+                        else
+                        {
+                            WebResponse.SendNodeResponseAsJson(context, node);
+                        }
                     }
                     else
                     {
@@ -201,13 +208,8 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (!WebServiceUtils.CheckAuthentication(context))
-                {
-                    return context;
-                }
-
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
-                string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
+                IotDataResponseFormat responseFormat = StringUtils.ToEnum(WebServiceUtils.GetQueryStringValue(webParameter, "format", DataStation.DefaultResponseFormat.ToString()), DataStation.DefaultResponseFormat);
 
                 string path = "";
                 var match = Regex.Match(context.Request.PathInfo, @"/nodes(?<path>(/[a-zA-Z0-9_]+)+)$");
@@ -215,10 +217,14 @@ namespace IotDataStation.WebService
                 {
                     path = match.Groups["path"].Value;
                 }
+                if (!WebServiceUtils.CheckAuthentication(context, path))
+                {
+                    return context;
+                }
 
                 IDataRepository dataRepository = DataStation.DataRepository;
                 INode[] nodes = dataRepository.GetNodes(path);
-                if (responseFormat == "xml")
+                if (responseFormat == IotDataResponseFormat.Xml)
                 {
                     WebResponse.SendNodesResponseAsXml(context, nodes);
                 }
@@ -240,13 +246,8 @@ namespace IotDataStation.WebService
         {
             try
             {
-                if (!WebServiceUtils.CheckAuthentication(context))
-                {
-                    return context;
-                }
-
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
-                string responseFormat = WebServiceUtils.GetQueryStringValue(webParameter, "format", "json").ToLower();
+                IotDataResponseFormat responseFormat = StringUtils.ToEnum(WebServiceUtils.GetQueryStringValue(webParameter, "format", DataStation.DefaultResponseFormat.ToString()), DataStation.DefaultResponseFormat);
                 int depth = StringUtils.GetIntValue(WebServiceUtils.GetQueryStringValue(webParameter, "depth", "1"), 1);
                 bool includeNodes = StringUtils.GetValue(WebServiceUtils.GetQueryStringValue(webParameter, "includeNodes", "false"), true);
 
@@ -256,10 +257,14 @@ namespace IotDataStation.WebService
                 {
                     path = match.Groups["path"].Value;
                 }
+                if (!WebServiceUtils.CheckAuthentication(context, path))
+                {
+                    return context;
+                }
 
                 IDataRepository dataRepository = DataStation.DataRepository;
                 var folder = dataRepository.GetFolder(path, depth, includeNodes);
-                if (responseFormat == "xml")
+                if (responseFormat == IotDataResponseFormat.Xml)
                 {
                     WebResponse.SendFolderResponseAsXml(context, folder);
                 }

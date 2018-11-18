@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using Newtonsoft.Json.Linq;
 using NLog;
 
@@ -82,6 +83,30 @@ namespace IotDataStation.Common.DataModel
             {
                 nodeItems = null;
                 Logger.Error(e, "CreateFrom(JArray nodeItemsJArray):");
+            }
+
+            return nodeItems;
+        }
+
+        public static NodeItems CreateFrom(XmlNodeList itemNodeList)
+        {
+            NodeItems nodeItems = null;
+            try
+            {
+                nodeItems = new NodeItems();
+                foreach (XmlNode itemNode in itemNodeList)
+                {
+                    NodeItem nodeItem = NodeItem.CreateFrom(itemNode);
+                    if (nodeItem != null)
+                    {
+                        nodeItems.SetItem(nodeItem);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                nodeItems = null;
+                Logger.Error(e, "CreateFrom(XmlNodeList itemNodeList):");
             }
 
             return nodeItems;

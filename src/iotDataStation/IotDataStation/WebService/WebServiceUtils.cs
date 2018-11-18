@@ -10,9 +10,9 @@ namespace IotDataStation.WebService
 {
     public class WebServiceUtils
     {
-        public static bool CheckAuthentication(IHttpContext context)
+        public static bool CheckAuthentication(IHttpContext context, string path)
         {
-            bool res = DataStation.Authentication.ValidateUser(context);
+            bool res = DataStation.Authentication.ValidateUser(context, path);
             if (!res)
             {
                 context.Response.SendResponse(HttpStatusCode.Unauthorized);

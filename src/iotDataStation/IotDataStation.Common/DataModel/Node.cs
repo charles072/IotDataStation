@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Xml;
+using System.Xml.Serialization;
 using IotDataStation.Common.Interface;
 using IotDataStation.Common.Util;
 using Newtonsoft.Json.Linq;
@@ -45,13 +47,7 @@ namespace IotDataStation.Common.DataModel
 
             try
             {
-                string id = JsonUtils.GetStringValue(nodeObject, "id");
-
-                if (string.IsNullOrWhiteSpace(id))
-                {
-                    Logger.Error("Cannot create Node, id is empty.");
-                    return null;
-                }
+                string id = "";
                 string name = "";
                 string className = "";
                 NodeStatus status = NodeStatus.None;
@@ -67,6 +63,7 @@ namespace IotDataStation.Common.DataModel
                     switch (property.Name)
                     {
                         case "id":
+                            id = property.Value.Value<string>();
                             break;
                         case "name":
                             name = property.Value.Value<string>();
@@ -98,6 +95,12 @@ namespace IotDataStation.Common.DataModel
                             break;
                     }
                 }
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    Logger.Error("Cannot create Node, id is empty.");
+                    return null;
+                }
+
                 node = new Node(id, name, status, groupName, point, attributes, items, updatedTime);
                 if (!string.IsNullOrWhiteSpace(className))
                 {
@@ -113,5 +116,93 @@ namespace IotDataStation.Common.DataModel
             return node;
         }
 
+        public static Node CreateFrom(XmlNode xmlNode)
+        {
+            if (xmlNode == null)
+            {
+                return null;
+            }
+
+            Node node = null;
+            try
+            {
+                string id = "";
+                string name = "";
+                string className = "";
+                NodeStatus status = NodeStatus.None;
+                string groupName = "";
+                DateTime updatedTime = CachedDateTime.Now;
+                NodePoint point = null;
+                NodeAttributes attributes = null;
+                NodeItems items = null;
+
+                foreach (XmlAttribute attribute in xmlNode.Attributes)
+                {
+                    switch (attribute.Name)
+                    {
+                        case "id":
+                            id = attribute.Value;
+                            break;
+                        case "name":
+                            name = attribute.Value;
+                            break;
+                        case "class":
+                            className = attribute.Value;
+                            break;
+                        case "status":
+                            status = StringUtils.ToEnum(attribute.Value, NodeStatus.None);
+                            break;
+                        case "group":
+                            groupName = attribute.Value;
+                            break;
+                        case "updatedTime":
+                            updatedTime = DateTime.ParseExact(attribute.Value, "yyyy.MM.dd HH:mm:ss", CultureInfo.InvariantCulture);
+                            break;
+                        default:
+                            if (attributes == null)
+                            {
+                                attributes = new NodeAttributes();
+                            }
+                            attributes[attribute.Name] = attribute.Value;
+                            break;
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    Logger.Error("Cannot create Node, id is empty.");
+                    return null;
+                }
+
+                XmlNode pointNode = xmlNode.SelectSingleNode("Point");
+                if (pointNode != null)
+                {
+                    point = NodePoint.CreateFrom(pointNode);
+                }
+                XmlNodeList itemNodeList = xmlNode.SelectNodes("Items/Item");
+                if (itemNodeList?.Count > 0)
+                {
+                    items = NodeItems.CreateFrom(itemNodeList);
+                }
+
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    Logger.Error("Cannot create Node, id is empty.");
+                    return null;
+                }
+
+                node = new Node(id, name, status, groupName, point, attributes, items, updatedTime);
+                if (!string.IsNullOrWhiteSpace(className))
+                {
+                    node.ClassName = className.Trim();
+                }
+            }
+            catch (Exception e)
+            {
+                node = null;
+                Logger.Error(e, "CreateFrom(XmlNode xmlNode):");
+            }
+            return node;
+        }
     }
 }

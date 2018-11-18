@@ -44,18 +44,71 @@ namespace IotDataStation.Common.DataModel
             xmlWriter.WriteEndElement();
         }
 
+
+        public static NodePoint CreateFrom(JArray jArray)
+        {
+            if (jArray == null)
+            {
+                return null;
+            }
+            if (jArray.Count != 2)
+            {
+                return null;
+            }
+
+            NodePoint pointObject = null;
+            try
+            {
+                double x = jArray[0].Value<double>();
+                double y = jArray[1].Value<double>();
+                pointObject = new NodePoint(x, y);
+            }
+            catch (Exception e)
+            {
+                pointObject = null;
+                Logger.Error(e, "CreateFrom(JArray jArray):");
+            }
+
+            return pointObject;
+        }
+
         public static NodePoint CreateFrom(JObject pointJObject)
         {
-            NodePoint pointObject = null;
             if (pointJObject == null)
             {
                 return null;
             }
 
+            if (pointJObject.Type == JTokenType.Array)
+            {
+                return CreateFrom(((JToken)pointJObject) as JArray);
+            }
+
+            NodePoint pointObject = null;
             try
             {
                 double x = JsonUtils.GetDoubleValue(pointJObject, "x");
                 double y = JsonUtils.GetDoubleValue(pointJObject, "y");
+                pointObject = new NodePoint(x, y);
+            }
+            catch (Exception e)
+            {
+                pointObject = null;
+                Logger.Error(e, "CreateFrom(pointObject):");
+            }
+            return pointObject;
+        }
+        public static NodePoint CreateFrom(XmlNode xmlNode)
+        {
+            if (xmlNode != null)
+            {
+                return null;
+            }
+            NodePoint pointObject = null;
+            try
+            {
+                double x = XmlUtils.GetXmlAttributeDoubleValue(xmlNode, "x");
+                double y = XmlUtils.GetXmlAttributeDoubleValue(xmlNode, "y");
                 pointObject = new NodePoint(x, y);
             }
             catch (Exception e)

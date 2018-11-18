@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Xml;
 using IotDataStation.Common.Util;
 using Newtonsoft.Json.Linq;
 using NLog;
@@ -107,6 +108,47 @@ namespace IotDataStation.Common.DataModel
             catch (Exception e)
             {
                 Logger.Error(e, "NodeItem CreateFrom(JObject nodeItemJObject):");
+                nodeItem = null;
+            }
+            return nodeItem;
+        }
+
+        public static NodeItem CreateFrom(XmlNode itemNode)
+        {
+            if (itemNode == null)
+            {
+                return null;
+            }
+
+            NodeItem nodeItem = null;
+            try
+            {
+                string name = XmlUtils.GetXmlAttributeValue(itemNode, "name");
+                string value = XmlUtils.GetXmlAttributeValue(itemNode, "value");
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    Logger.Error("Cannot create NodeItem, name is empty.");
+                    return null;
+                }
+
+                nodeItem = new NodeItem(name, value);
+                foreach (XmlAttribute attribute in itemNode.Attributes)
+                {
+                    switch (attribute.Name)
+                    {
+                        case "name":
+                        case "value":
+                            break;
+                        default:
+                            nodeItem[attribute.Name] = attribute.Value;
+                            break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "NodeItem CreateFrom(XmlNode itemNode):");
                 nodeItem = null;
             }
             return nodeItem;
