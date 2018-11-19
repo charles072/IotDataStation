@@ -15,17 +15,12 @@ namespace IotDataStation.Common.DataModel
 
         public bool IsNullNode => string.IsNullOrWhiteSpace(Id);
 
-        public Node(string id = "", string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodePoint point = null, NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null, string className = "") : base(id, name, status, groupName, point, attributes, items, updatedTime)
+        public Node(string id = "", string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null, string className = "") : base(id, name, status, groupName, attributes, items, updatedTime)
         {
             if (!string.IsNullOrWhiteSpace(className))
             {
                 ClassName = className;
             }
-        }
-
-        public static INode CreateNullNode()
-        {
-            return new Node("", "", NodeStatus.None);
         }
 
         public static Node CreateFrom(INode iNode)
@@ -34,7 +29,7 @@ namespace IotDataStation.Common.DataModel
             {
                 return null;
             }
-            return new Node(iNode.Id, iNode.Name, iNode.Status, iNode.GroupName, iNode.Point, iNode.Attributes, iNode.Items, iNode.UpdatedTime, iNode.ClassName);
+            return new Node(iNode.Id, iNode.Name, iNode.Status, iNode.GroupName, iNode.Attributes, iNode.Items, iNode.UpdatedTime, iNode.ClassName);
         }
 
         public static Node CreateFrom(JObject nodeObject)
@@ -47,13 +42,13 @@ namespace IotDataStation.Common.DataModel
 
             try
             {
+                string path = "";
                 string id = "";
                 string name = "";
                 string className = "";
                 NodeStatus status = NodeStatus.None;
                 string groupName = "";
                 DateTime updatedTime = CachedDateTime.Now;
-                NodePoint point = null;
                 NodeAttributes attributes = null;
                 NodeItems items = null;
 
@@ -62,6 +57,9 @@ namespace IotDataStation.Common.DataModel
                 {
                     switch (property.Name)
                     {
+                        case "path":
+                            path = property.Value.Value<string>();
+                            break;
                         case "id":
                             id = property.Value.Value<string>();
                             break;
@@ -79,9 +77,6 @@ namespace IotDataStation.Common.DataModel
                             break;
                         case "updatedTime":
                             updatedTime = DateTime.ParseExact(property.Value.Value<string>(), "yyyy.MM.dd HH:mm:ss", CultureInfo.InvariantCulture);
-                            break;
-                        case "point":
-                            point = NodePoint.CreateFrom((JObject)nodeObject["point"]);
                             break;
                         case "items":
                             items = NodeItems.CreateFrom((JArray)nodeObject["items"]);
@@ -101,7 +96,8 @@ namespace IotDataStation.Common.DataModel
                     return null;
                 }
 
-                node = new Node(id, name, status, groupName, point, attributes, items, updatedTime);
+                node = new Node(id, name, status, groupName, attributes, items, updatedTime);
+                node.Path = path;
                 if (!string.IsNullOrWhiteSpace(className))
                 {
                     node.ClassName = className.Trim();
@@ -126,13 +122,13 @@ namespace IotDataStation.Common.DataModel
             Node node = null;
             try
             {
+                string path = "";
                 string id = "";
                 string name = "";
                 string className = "";
                 NodeStatus status = NodeStatus.None;
                 string groupName = "";
                 DateTime updatedTime = CachedDateTime.Now;
-                NodePoint point = null;
                 NodeAttributes attributes = null;
                 NodeItems items = null;
 
@@ -140,6 +136,9 @@ namespace IotDataStation.Common.DataModel
                 {
                     switch (attribute.Name)
                     {
+                        case "path":
+                            path = attribute.Value;
+                            break;
                         case "id":
                             id = attribute.Value;
                             break;
@@ -174,11 +173,6 @@ namespace IotDataStation.Common.DataModel
                     return null;
                 }
 
-                XmlNode pointNode = xmlNode.SelectSingleNode("Point");
-                if (pointNode != null)
-                {
-                    point = NodePoint.CreateFrom(pointNode);
-                }
                 XmlNodeList itemNodeList = xmlNode.SelectNodes("Items/Item");
                 if (itemNodeList?.Count > 0)
                 {
@@ -191,7 +185,8 @@ namespace IotDataStation.Common.DataModel
                     return null;
                 }
 
-                node = new Node(id, name, status, groupName, point, attributes, items, updatedTime);
+                node = new Node(id, name, status, groupName, attributes, items, updatedTime);
+                node.Path = path;
                 if (!string.IsNullOrWhiteSpace(className))
                 {
                     node.ClassName = className.Trim();

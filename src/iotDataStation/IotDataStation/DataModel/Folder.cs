@@ -24,7 +24,7 @@ namespace IotDataStation.DataModel
             set => _childNodes = value;
         }
 
-        public string ToXmlString()
+        public string ToXmlString(bool includeSummary = true)
         {
             string xmlString = "";
             try
@@ -33,7 +33,7 @@ namespace IotDataStation.DataModel
                 {
                     using (var xmlWriter = XmlWriter.Create(sw, XmlUtils.XmlWriterSettings()))
                     {
-                        WriteXml(xmlWriter);
+                        WriteXml(xmlWriter, includeSummary);
                     }
                     xmlString = sw.ToString();
                 }
@@ -45,11 +45,14 @@ namespace IotDataStation.DataModel
             return xmlString;
         }
 
-        public virtual void WriteXml(XmlWriter xmlWriter)
+        public virtual void WriteXml(XmlWriter xmlWriter, bool includeSummary = true)
         {
             WriteHeader(xmlWriter);
 
-            WriteStatusSummaryXml(xmlWriter);
+            if (includeSummary)
+            {
+                WriteStatusSummaryXml(xmlWriter);
+            }
             WriteChildFoldersXml(xmlWriter);
             WriteChildNodesXml(xmlWriter);
             WriteFooter(xmlWriter);
@@ -92,12 +95,10 @@ namespace IotDataStation.DataModel
                 return;
             }
 
-            xmlWriter.WriteStartElement("Folders");
             foreach (var childFolder in childFolders)
             {
                 childFolder.WriteXml(xmlWriter);
             }
-            xmlWriter.WriteEndElement();
         }
         private void WriteChildNodesXml(XmlWriter xmlWriter)
         {
@@ -107,12 +108,10 @@ namespace IotDataStation.DataModel
                 return;
             }
 
-            xmlWriter.WriteStartElement("Nodes");
             foreach (var childNode in childNodes)
             {
                 childNode.WriteXml(xmlWriter);
             }
-            xmlWriter.WriteEndElement();
         }
 
         private void WriteFooter(XmlWriter xmlWriter)

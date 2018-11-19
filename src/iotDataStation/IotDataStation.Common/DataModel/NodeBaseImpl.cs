@@ -25,24 +25,23 @@ namespace IotDataStation.Common.DataModel
             set => _groupName = value;
         }
 
+        public string Path { get; set; }
         public string Id { get; set;}
         public string Name { get; set; }
         public NodeStatus Status { get; set; }
 
         public DateTime UpdatedTime { get; set; }
-        public NodePoint Point { get; set; }
         public NodeAttributes Attributes { get; }
         public NodeItems Items { get; }
 
-        protected NodeBaseImpl(string id, string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodePoint point = null,NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null)
+        protected NodeBaseImpl(string id, string name = "", NodeStatus status = NodeStatus.None, string groupName = "", NodeAttributes attributes = null, NodeItems items = null, DateTime? updatedTime = null)
         {
+            Path = "";
             Id = id;
             Name = string.IsNullOrWhiteSpace(name) ? id : name;
             Status = status;
             GroupName = groupName;
             UpdatedTime = updatedTime ?? CachedDateTime.Now;
-
-            Point = point?.Clone();
 
             Attributes = new NodeAttributes();
             if (attributes != null)
@@ -88,7 +87,6 @@ namespace IotDataStation.Common.DataModel
         {
             WriteHeader(xmlWriter);
 
-            Point?.WriteXml(xmlWriter);
             WriteBodyXml(xmlWriter);
 
             WriteFooter(xmlWriter);
@@ -97,7 +95,10 @@ namespace IotDataStation.Common.DataModel
         private void WriteHeader(XmlWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Node");
-
+            if (!string.IsNullOrWhiteSpace(Path))
+            {
+                xmlWriter.WriteAttributeString("path", Path);
+            }
             xmlWriter.WriteAttributeString("id", Id);
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("class", ClassName);
@@ -140,6 +141,10 @@ namespace IotDataStation.Common.DataModel
         public virtual JObject ToJObject()
         {
             JObject nodeObject = new JObject();
+            if (!string.IsNullOrWhiteSpace(Path))
+            {
+                nodeObject["path"] = Path;
+            }
             nodeObject["id"] = Id;
             nodeObject["name"] = Name;
             nodeObject["class"] = ClassName;
@@ -150,12 +155,6 @@ namespace IotDataStation.Common.DataModel
             foreach (KeyValuePair<string, string> keyValuePair in Attributes)
             {
                 nodeObject[keyValuePair.Key] = keyValuePair.Value;
-            }
-
-            if (Point != null)
-            {
-                ////nodeObject["point"] = Point.ToJObject();
-                nodeObject["point"] = Point.ToJArray();
             }
 
             if (Items.Count > 0)
@@ -183,6 +182,7 @@ namespace IotDataStation.Common.DataModel
             string lowerCaseName = name.ToLower();
             switch (lowerCaseName)
             {
+                case "path":
                 case "id":
                 case "name":
                 case "class":

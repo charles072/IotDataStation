@@ -5,7 +5,7 @@ namespace IotDataStation.Common.Interface
 {
     public interface IDataRepository
     {
-        INode[] GetNodes(string path);
+        INode[] GetNodes(string path, bool recursive = false);
         INode GetNode(string path, string id);
         bool SetNode(string path, INode node);
 

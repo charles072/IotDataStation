@@ -25,13 +25,78 @@ namespace IotDataStation
 
         public INodeStatusSummary[] NodeStatusSummaries => _nodeStatusSummaryDictionary.Values.ToArray();
 
-        public INode[] GetNodes(string path)
+        public INode[] GetNodes(string path, bool recursive = false)
         {
             path = path.Trim().Trim('/');
-            if (_nodesDictionary.TryGetValue(path, out var nodeDictionary))
+            try
             {
-                return nodeDictionary.Values.ToArray();
+                if (recursive)
+                {
+                    return GetNodesRecursive(path);
+                }
+                else
+                {
+                    if (_nodesDictionary.TryGetValue(path, out var nodeDictionary))
+                    {
+                        return nodeDictionary.Values.ToArray();
+                    }
+                }
             }
+            catch (Exception e)
+            {
+                Logger.Error(e, "GetNodes:");
+            }
+
+            return new INode[0];
+        }
+
+        private INode[] GetNodesRecursive(string path)
+        {
+            path = path.Trim().Trim('/');
+            List<INode> nodeList = new List<INode>();
+            try
+            {
+                string[] splitPath = StringUtils.Split(path, '/');
+                int pathDepth = splitPath.Length;
+
+                List<INodeStatusSummary> nodeStatusSummaryList = new List<INodeStatusSummary>();
+                nodeStatusSummaryList.AddRange(NodeStatusSummaries);
+                nodeStatusSummaryList.Sort((x, y) =>
+                {
+                    int res = x.PathDepth.CompareTo(y.PathDepth);
+                    if (res == 0)
+                    {
+                        return String.Compare(x.Name, y.Name, StringComparison.Ordinal);
+                    }
+
+                    return res;
+                });
+
+                foreach (var nodeStatusSummary in nodeStatusSummaryList)
+                {
+                    if (nodeStatusSummary.PathDepth == pathDepth)
+                    {
+                        if (nodeStatusSummary.Path == path || string.IsNullOrWhiteSpace(path))
+                        {
+                            nodeList.AddRange(GetNodes(nodeStatusSummary.Path));
+                        }
+                    }
+                    else if (nodeStatusSummary.PathDepth > pathDepth)
+                    {
+                        if (nodeStatusSummary.Path.StartsWith(path + "/") || string.IsNullOrWhiteSpace(path))
+                        {
+                            nodeList.AddRange(GetNodes(nodeStatusSummary.Path));
+                        }
+                    }
+                }
+
+                return nodeList.ToArray();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "GetNodesRecursive:");
+            }
+
             return new INode[0];
         }
 
@@ -45,7 +110,7 @@ namespace IotDataStation
                     return node;
                 }
             }
-            return Node.CreateNullNode();
+            return null;
         }
 
         public bool SetNode(string path, INode newNode)
@@ -61,6 +126,7 @@ namespace IotDataStation
             try
             {
                 Node node = Node.CreateFrom(newNode);
+                node.Path = path;
                 if (_nodesDictionary.TryGetValue(path, out var nodeDictionary))
                 {
                     if (nodeDictionary.TryGetValue(node.Id, out var foundNode))

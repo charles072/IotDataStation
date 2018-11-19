@@ -62,7 +62,7 @@ namespace IotDataStation.WebService
             return linkInfos;
         }
 
-        [RestRoute(HttpMethod = HttpMethod.ALL, PathInfo = "/node(?<path>(/[a-zA-Z0-9_]+)+)/(?<nodeId>[a-zA-Z0-9_]+)$")]
+        [RestRoute(HttpMethod = HttpMethod.ALL, PathInfo = "/node(?<path>(/[a-zA-Z0-9_]+)*)/(?<nodeId>[a-zA-Z0-9_]+)$")]
         public IHttpContext ServiceNode(IHttpContext context)
         {
             IHttpContext responseContext = null;
@@ -95,7 +95,7 @@ namespace IotDataStation.WebService
 
                 string path = "";
                 string nodeId = "";
-                var match = Regex.Match(context.Request.PathInfo, @"/node(?<path>(/[a-zA-Z0-9_]+)+)/(?<nodeId>[a-zA-Z0-9_]+)$");
+                var match = Regex.Match(context.Request.PathInfo, @"/node(?<path>(/[a-zA-Z0-9_]+)*)/(?<nodeId>[a-zA-Z0-9_]+)$");
                 if (match.Success)
                 {
                     path = match.Groups["path"].Value;
@@ -149,7 +149,7 @@ namespace IotDataStation.WebService
 
                 string path = "";
                 string nodeId = "";
-                var match = Regex.Match(context.Request.PathInfo, @"/node(?<path>(/[a-zA-Z0-9_]+)+)/(?<nodeId>[a-zA-Z0-9_]+)$");
+                var match = Regex.Match(context.Request.PathInfo, @"/node(?<path>(/[a-zA-Z0-9_]+)*)/(?<nodeId>[a-zA-Z0-9_]+)$");
                 if (match.Success)
                 {
                     path = match.Groups["path"].Value;
@@ -203,14 +203,15 @@ namespace IotDataStation.WebService
         }
 
 
-        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "/nodes(?<path>(/[a-zA-Z0-9_]+)+)$")]
+        [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "/nodes(?<path>(/[a-zA-Z0-9_]+)*)$")]
         public IHttpContext GetNodes(IHttpContext context)
         {
             try
             {
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
                 IotDataResponseFormat responseFormat = StringUtils.ToEnum(WebServiceUtils.GetQueryStringValue(webParameter, "format", DataStation.DefaultResponseFormat.ToString()), DataStation.DefaultResponseFormat);
-
+                bool recursive = StringUtils.GetValue(WebServiceUtils.GetQueryStringValue(webParameter, "recursive", "false"), false);
+                //includeChildFolders
                 string path = "";
                 var match = Regex.Match(context.Request.PathInfo, @"/nodes(?<path>(/[a-zA-Z0-9_]+)+)$");
                 if (match.Success)
@@ -223,7 +224,7 @@ namespace IotDataStation.WebService
                 }
 
                 IDataRepository dataRepository = DataStation.DataRepository;
-                INode[] nodes = dataRepository.GetNodes(path);
+                INode[] nodes = dataRepository.GetNodes(path, recursive);
                 if (responseFormat == IotDataResponseFormat.Xml)
                 {
                     WebResponse.SendNodesResponseAsXml(context, nodes);
@@ -249,7 +250,7 @@ namespace IotDataStation.WebService
                 var webParameter = WebServiceUtils.GetNameValueCollection(context);
                 IotDataResponseFormat responseFormat = StringUtils.ToEnum(WebServiceUtils.GetQueryStringValue(webParameter, "format", DataStation.DefaultResponseFormat.ToString()), DataStation.DefaultResponseFormat);
                 int depth = StringUtils.GetIntValue(WebServiceUtils.GetQueryStringValue(webParameter, "depth", "1"), 1);
-                bool includeNodes = StringUtils.GetValue(WebServiceUtils.GetQueryStringValue(webParameter, "includeNodes", "false"), true);
+                bool includeNodes = StringUtils.GetValue(WebServiceUtils.GetQueryStringValue(webParameter, "includeNodes", "false"), false);
 
                 string path = "";
                 var match = Regex.Match(context.Request.PathInfo, @"/folder(?<path>(/[a-zA-Z0-9_]+)+)$");

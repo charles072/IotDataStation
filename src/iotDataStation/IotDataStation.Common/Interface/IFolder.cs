@@ -15,8 +15,8 @@ namespace IotDataStation.Common.Interface
 
         void AddChildFolder(IFolder folder);
 
-        string ToXmlString();
-        void WriteXml(XmlWriter xmlWriter);
+        string ToXmlString(bool includeSummary = true);
+        void WriteXml(XmlWriter xmlWriter, bool includeSummary = true);
         JObject ToJObject();
     }
 }

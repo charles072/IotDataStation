@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataModel\NodePoint.cs" />
     <Compile Include="DataModel\SimpleSettings.cs" />
     <Compile Include="Interface\IDataListener.cs" />
     <Compile Include="Interface\IDataRepository.cs" />
